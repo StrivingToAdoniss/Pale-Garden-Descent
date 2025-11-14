@@ -13,5 +13,6 @@ public class Palegarden implements ModInitializer {
     @Override
     public void onInitialize() {
         InfectionSystem.register();
+        ModCommands.register();
     }
 }
