@@ -6,10 +6,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 
 import java.util.*;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
+import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 
 public class InfectionCursor {
 
@@ -42,10 +44,12 @@ public class InfectionCursor {
             BlockPos pos = searchQueue.poll();
 
             infectBlock(pos);
+            placeLabyrinthWall(pos);
+            spawnInfectionParticles(pos);
             addNeighborsToQueue(pos);
 
             if (++currentTransformations >= InfectionConfig.MAX_TRANSFORMATIONS
-                || searchQueue.isEmpty()) {
+                    || searchQueue.isEmpty()) {
                 finished = true;
                 return;
             }
@@ -59,12 +63,32 @@ public class InfectionCursor {
 
         BlockState state = world.getBlockState(pos);
 
-        return !state.isOf(Blocks.PALE_MOSS_BLOCK) && !state.isOf(Blocks.AIR);
+        return !state.isOf(Blocks.PALE_MOSS_BLOCK) && !state.isOf(Blocks.AIR) && !state.isOf(Blocks.PALE_OAK_LOG)
+                && !state.isOf(Blocks.CAVE_AIR) && !state.isOf(Blocks.VOID_AIR);
     }
 
     private void infectBlock(BlockPos pos) {
         world.setBlockState(pos, Blocks.PALE_MOSS_BLOCK.getDefaultState());
+    }
 
+    private void placeLabyrinthWall(BlockPos pos) {
+        ChunkPos chunkPos = world.getChunk(pos).getPos();
+
+        LabyrinthGenerator.generateLabyrinthChunkIfNotInfected(chunkPos);
+
+        if (LabyrinthGenerator.shouldPlaceWallAt(pos)) {
+            buildWallColumn(pos);
+        }
+    }
+
+    private void buildWallColumn(BlockPos pos) {
+        int wallHeight = LabyrinthGenerator.getWallHeight();
+        for (int dy = 1; dy <= wallHeight; dy++) {
+            world.setBlockState(pos.up(dy), Blocks.PALE_OAK_LOG.getDefaultState());
+        }
+    }
+
+    private void spawnInfectionParticles(BlockPos pos) {
         world.spawnParticles(ParticleTypes.SCULK_CHARGE_POP,
             pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
             5, 0.2, 0.2, 0.2, 0.01);
@@ -76,7 +100,7 @@ public class InfectionCursor {
 
             if (!visited.contains(neighbor) && world.isInBuildLimit(neighbor) && canInfect(neighbor)) {
                 searchQueue.add(neighbor);
-                visited.add(pos);
+                visited.add(neighbor);
             }
         }
     }

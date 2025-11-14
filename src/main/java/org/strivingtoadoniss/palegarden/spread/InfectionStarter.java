@@ -3,10 +3,9 @@ package org.strivingtoadoniss.palegarden.spread;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import java.util.*;
-import org.strivingtoadoniss.palegarden.config.InfectionConfig;
+import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 
 public class InfectionStarter {
 
@@ -20,6 +19,7 @@ public class InfectionStarter {
         if (spawnPos != null) {
             serverWorld.setBlockState(spawnPos, Blocks.PALE_MOSS_BLOCK.getDefaultState());
             InfectionCursor cursor = new InfectionCursor(serverWorld, spawnPos);
+            LabyrinthGenerator.setWorld(serverWorld);
             InfectionSystem.getInstance().addCursor(cursor);
         }
     }
