@@ -32,4 +32,9 @@ public class InfectionSystem {
         cursors.removeIf(InfectionCursor::isFinished);
         cursors.forEach(InfectionCursor::tick);
     }
+
+    public void stopAllInfections() {
+        cursors.forEach(InfectionCursor::finishImmediately);
+        cursors.clear();
+    }
 }

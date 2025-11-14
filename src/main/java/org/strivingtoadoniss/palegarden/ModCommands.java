@@ -15,6 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.spread.InfectionStarter;
+import org.strivingtoadoniss.palegarden.spread.InfectionSystem;
 
 public class ModCommands {
 
@@ -25,6 +26,7 @@ public class ModCommands {
             registerSetDelayCommand(dispatcher);
             registerSetMaxTransformations(dispatcher);
             registerSetMaxInfectionRadius(dispatcher);
+            registerStopAllInfections(dispatcher);
         });
     }
 
@@ -66,6 +68,20 @@ public class ModCommands {
             .then(argument("radius", integer(1))
                 .executes(ModCommands::executeSetMaxInfectionRadius))
         );
+    }
+
+    private static void registerStopAllInfections(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(literal("stop_all_infections")
+            .requires(source -> source.hasPermissionLevel(2))
+            .executes(ModCommands::executeStopAllInfections)
+
+        );
+    }
+
+    private static int executeStopAllInfections(CommandContext<ServerCommandSource> context) {
+        InfectionSystem.getInstance().stopAllInfections();
+
+        return 1;
     }
 
     private static int executeStartSpread(CommandContext<ServerCommandSource> context) {

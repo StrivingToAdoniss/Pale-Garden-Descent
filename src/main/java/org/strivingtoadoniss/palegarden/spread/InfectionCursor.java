@@ -104,4 +104,8 @@ public class InfectionCursor {
             }
         }
     }
+
+    public void finishImmediately() {
+        finished = true;
+    }
 }
