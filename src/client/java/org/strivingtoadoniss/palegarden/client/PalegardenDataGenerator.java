@@ -8,5 +8,8 @@ public class PalegardenDataGenerator implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
         FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
+        pack.addProvider(PalegardenBlockLootTableProvider::new);
+        pack.addProvider(PalegardenBlockTagProvider::new);
+        pack.addProvider(PalegardenModelProvider::new);
     }
 }
