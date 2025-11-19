@@ -10,6 +10,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 
 import java.util.*;
+import org.strivingtoadoniss.palegarden.ModBlocks;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 
@@ -63,12 +64,15 @@ public class InfectionCursor {
 
         BlockState state = world.getBlockState(pos);
 
-        return !state.isOf(Blocks.PALE_MOSS_BLOCK) && !state.isOf(Blocks.AIR) && !state.isOf(Blocks.PALE_OAK_LOG)
-                && !state.isOf(Blocks.CAVE_AIR) && !state.isOf(Blocks.VOID_AIR);
+        return !state.isOf(ModBlocks.PALE_STONE) && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
+            && !state.isOf(Blocks.AIR) && !state.isOf(Blocks.PALE_OAK_LOG)
+            && !state.isOf(Blocks.CAVE_AIR) && !state.isOf(Blocks.VOID_AIR);
     }
 
     private void infectBlock(BlockPos pos) {
-        world.setBlockState(pos, Blocks.PALE_MOSS_BLOCK.getDefaultState());
+        world.setBlockState(pos,
+            world.getRandom().nextBoolean() ? ModBlocks.PALE_STONE.getDefaultState()
+                : ModBlocks.PALE_ROOTED_STONE.getDefaultState());
     }
 
     private void placeLabyrinthWall(BlockPos pos) {

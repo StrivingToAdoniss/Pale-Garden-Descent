@@ -5,6 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
+import org.strivingtoadoniss.palegarden.ModBlocks;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 
 public class InfectionStarter {
@@ -17,7 +18,9 @@ public class InfectionStarter {
         BlockPos spawnPos = findSurfaceBelow(serverWorld, new BlockPos(x, center.getY(), z));
 
         if (spawnPos != null) {
-            serverWorld.setBlockState(spawnPos, Blocks.PALE_MOSS_BLOCK.getDefaultState());
+            serverWorld.setBlockState(spawnPos,
+                random.nextBoolean() ? ModBlocks.PALE_STONE.getDefaultState()
+                    : ModBlocks.PALE_ROOTED_STONE.getDefaultState());
             InfectionCursor cursor = new InfectionCursor(serverWorld, spawnPos);
             LabyrinthGenerator.setWorld(serverWorld);
             InfectionSystem.getInstance().addCursor(cursor);
