@@ -10,7 +10,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 
 import java.util.*;
+import net.minecraft.util.math.random.Random;
 import org.strivingtoadoniss.palegarden.ModBlocks;
+import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 
@@ -47,6 +49,7 @@ public class InfectionCursor {
             infectBlock(pos);
             placeLabyrinthWall(pos);
             spawnInfectionParticles(pos);
+            trySpawnMushroom(pos);
             addNeighborsToQueue(pos);
 
             if (++currentTransformations >= InfectionConfig.MAX_TRANSFORMATIONS
@@ -64,7 +67,8 @@ public class InfectionCursor {
 
         BlockState state = world.getBlockState(pos);
 
-        return !state.isOf(ModBlocks.PALE_STONE) && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
+        return !state.isOf(ModBlocks.PALE_MUSHROOM) && !state.isOf(ModBlocks.PALE_STONE)
+            && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
             && !state.isOf(Blocks.AIR) && !state.isOf(Blocks.PALE_OAK_LOG)
             && !state.isOf(Blocks.CAVE_AIR) && !state.isOf(Blocks.VOID_AIR);
     }
@@ -96,6 +100,45 @@ public class InfectionCursor {
         world.spawnParticles(ParticleTypes.SCULK_CHARGE_POP,
             pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
             5, 0.2, 0.2, 0.2, 0.01);
+    }
+
+    private void trySpawnMushroom(BlockPos pos) {
+        BlockPos mushroomPos = pos.up();
+
+        if (canPlaceMushroom(mushroomPos) && shouldSpawnMushroom()) {
+            placeMushroom(mushroomPos);
+        }
+    }
+
+    private boolean canPlaceMushroom(BlockPos mushroomPos) {
+        return world.getBlockState(mushroomPos).isAir();
+    }
+
+    private boolean shouldSpawnMushroom() {
+        return world.getRandom().nextFloat() <= 0.15f;
+    }
+
+    private void placeMushroom(BlockPos mushroomPos) {
+        Random random = world.getRandom();
+        int amount = getWeightedMushroomAmount(random);
+
+        BlockState mushroomState = ModBlocks.PALE_MUSHROOM.getDefaultState()
+            .with(PaleMushroomBlock.AMOUNT, amount);
+        world.setBlockState(mushroomPos, mushroomState);
+    }
+
+    private int getWeightedMushroomAmount(Random random) {
+        float roll = random.nextFloat();
+
+        if (roll < 0.5f) {
+            return 1;
+        } else if (roll < 0.8f) {
+            return 2;
+        } else if (roll < 0.95f) {
+            return 3;
+        } else {
+            return 4;
+        }
     }
 
     private void addNeighborsToQueue(BlockPos pos) {

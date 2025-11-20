@@ -12,7 +12,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import org.strivingtoadoniss.palegarden.ModBlocks;
 
 public class PaleMushroomBlock extends PlantBlock {
     public static final IntProperty AMOUNT = Properties.PICKLES;
@@ -72,8 +72,9 @@ public class PaleMushroomBlock extends PlantBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
+    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+        return floor.isOf(ModBlocks.PALE_STONE) 
+            || floor.isOf(ModBlocks.PALE_ROOTED_STONE)
+            || super.canPlantOnTop(floor, world, pos);
     }
 }
-
