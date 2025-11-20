@@ -13,6 +13,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
+import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
 
 public class ModBlocks {
 
@@ -20,6 +21,7 @@ public class ModBlocks {
         ItemGroupEvents.modifyEntriesEvent(ModItems.CUSTOM_ITEM_GROUP_KEY).register(itemGroup -> {
             itemGroup.add(ModBlocks.PALE_STONE.asItem());
             itemGroup.add(ModBlocks.PALE_ROOTED_STONE.asItem());
+            itemGroup.add(ModBlocks.PALE_MUSHROOM.asItem());
         });
     }
 
@@ -56,6 +58,13 @@ public class ModBlocks {
         "pale_rooted_stone",
         Block::new,
         AbstractBlock.Settings.copy(Blocks.STONE),
+        true
+    );
+
+    public static final Block PALE_MUSHROOM = register(
+        "pale_mushroom",
+        PaleMushroomBlock::new,
+        AbstractBlock.Settings.copy(Blocks.BROWN_MUSHROOM),
         true
     );
 }

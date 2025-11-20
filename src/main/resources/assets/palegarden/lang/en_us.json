@@ -1,7 +1,9 @@
 {
   "block.palegarden.pale_rooted_stone": "Pale Rooted Stone",
   "block.palegarden.pale_stone": "Pale Stone",
+  "block.palegarden.pale_mushroom": "Pale Mushroom",
   "item.palegarden.pale_rooted_stone": "Pale Rooted Stone",
   "item.palegarden.pale_stone": "Pale Stone",
+  "item.palegarden.pale_mushroom": "Pale Mushroom",
   "itemgroup.palegarden.pale_garden_group": "Pale Garden"
 }

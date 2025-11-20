@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "pickles=1": {
+      "model": "palegarden:block/pale_mushroom_one"
+    },
+    "pickles=2": {
+      "model": "palegarden:block/pale_mushroom_two"
+    },
+    "pickles=3": {
+      "model": "palegarden:block/pale_mushroom_three"
+    },
+    "pickles=4": {
+      "model": "palegarden:block/pale_mushroom_four"
+    }
+  }
+}
+
