@@ -15,6 +15,7 @@ import org.strivingtoadoniss.palegarden.ModBlocks;
 import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
+import org.strivingtoadoniss.palegarden.worldgen.PaleOakTreeGenerator;
 
 public class InfectionCursor {
 
@@ -67,10 +68,19 @@ public class InfectionCursor {
 
         BlockState state = world.getBlockState(pos);
 
-        return !state.isOf(ModBlocks.PALE_MUSHROOM) && !state.isOf(ModBlocks.PALE_STONE)
+        return !state.isOf(ModBlocks.PALE_MUSHROOM)
+            && !state.isOf(ModBlocks.PALE_STONE)
             && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
-            && !state.isOf(Blocks.AIR) && !state.isOf(Blocks.PALE_OAK_LOG)
-            && !state.isOf(Blocks.CAVE_AIR) && !state.isOf(Blocks.VOID_AIR);
+            && !state.isOf(Blocks.PALE_OAK_LOG)
+            && !state.isOf(Blocks.PALE_OAK_LEAVES)
+            && !state.isOf(Blocks.PALE_HANGING_MOSS)
+            && !state.isOf(Blocks.MOSS_CARPET)
+            && !state.isOf(Blocks.MOSS_BLOCK)
+            && !state.isOf(Blocks.HANGING_ROOTS)
+            && !state.isOf(Blocks.GRASS_BLOCK)
+            && !state.isOf(Blocks.AIR)
+            && !state.isOf(Blocks.CAVE_AIR)
+            && !state.isOf(Blocks.VOID_AIR);
     }
 
     private void infectBlock(BlockPos pos) {
@@ -85,6 +95,12 @@ public class InfectionCursor {
         LabyrinthGenerator.generateLabyrinthChunkIfNotInfected(chunkPos);
 
         if (LabyrinthGenerator.shouldPlaceWallAt(pos)) {
+            buildTreeWall(pos);
+        }
+    }
+
+    private void buildTreeWall(BlockPos pos) {
+        if (!PaleOakTreeGenerator.generateTreeAt(world, pos.up())) {
             buildWallColumn(pos);
         }
     }
