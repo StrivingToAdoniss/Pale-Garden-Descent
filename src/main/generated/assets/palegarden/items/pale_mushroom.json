@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:block/brown_mushroom"
+    "model": "palegarden:item/pale_mushroom"
   }
 }
