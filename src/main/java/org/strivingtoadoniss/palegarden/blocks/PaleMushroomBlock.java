@@ -17,10 +17,10 @@ import org.strivingtoadoniss.palegarden.ModBlocks;
 public class PaleMushroomBlock extends PlantBlock {
     public static final IntProperty AMOUNT = Properties.PICKLES;
 
-    protected static final VoxelShape ONE_MUSHROOM_SHAPE = Block.createCuboidShape(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D);
-    protected static final VoxelShape TWO_MUSHROOMS_SHAPE = Block.createCuboidShape(3.0D, 0.0D, 3.0D, 13.0D, 6.0D, 13.0D);
-    protected static final VoxelShape THREE_MUSHROOMS_SHAPE = Block.createCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 6.0D, 14.0D);
-    protected static final VoxelShape FOUR_MUSHROOMS_SHAPE = Block.createCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 7.0D, 14.0D);
+    protected static final VoxelShape ONE_MUSHROOM_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 3.9, 9.0);
+    protected static final VoxelShape TWO_MUSHROOMS_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 9.5, 5.4, 8.5);
+    protected static final VoxelShape THREE_MUSHROOMS_SHAPE = Block.createCuboidShape(5.5, 0.0, 5.5, 11.0, 5.4, 10.5d);
+    protected static final VoxelShape FOUR_MUSHROOMS_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.5, 10.5, 5.4, 11.0);
 
     public static final MapCodec<PaleMushroomBlock> CODEC = createCodec(PaleMushroomBlock::new);
 
