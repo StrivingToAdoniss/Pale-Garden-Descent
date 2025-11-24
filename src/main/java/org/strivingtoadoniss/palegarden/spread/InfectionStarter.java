@@ -1,6 +1,5 @@
 package org.strivingtoadoniss.palegarden.spread;
 
-import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
@@ -9,6 +8,8 @@ import org.strivingtoadoniss.palegarden.ModBlocks;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 
 public class InfectionStarter {
+
+    private InfectionStarter() {}
 
     public static void startInfection(ServerWorld serverWorld, BlockPos center, int radius) {
         Random random = new Random();
@@ -33,8 +34,8 @@ public class InfectionStarter {
         for (int i = 0; i < 385; i++) {
             pos.move(0, -1, 0);
 
-            if (!world.getBlockState(pos).isAir() && world.getBlockState(pos.up()).isAir()) {
-                return pos.up();
+            if (world.getBlockState(pos).isSolid() && !world.getBlockState(pos.up()).isSolid()) {
+                return pos;
             }
         }
 

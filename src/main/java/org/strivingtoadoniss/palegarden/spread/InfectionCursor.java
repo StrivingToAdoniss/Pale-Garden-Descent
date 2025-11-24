@@ -68,35 +68,66 @@ public class InfectionCursor {
 
         BlockState state = world.getBlockState(pos);
 
-        return !state.isOf(ModBlocks.PALE_MUSHROOM)
+        return state.isSolid()
+            && !state.isOf(ModBlocks.PALE_MUSHROOM)
             && !state.isOf(ModBlocks.PALE_STONE)
             && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
             && !state.isOf(Blocks.PALE_OAK_LOG)
             && !state.isOf(Blocks.PALE_OAK_LEAVES)
             && !state.isOf(Blocks.PALE_HANGING_MOSS)
             && !state.isOf(Blocks.MOSS_CARPET)
-            && !state.isOf(Blocks.MOSS_BLOCK)
             && !state.isOf(Blocks.HANGING_ROOTS)
-            && !state.isOf(Blocks.GRASS_BLOCK)
             && !state.isOf(Blocks.AIR)
             && !state.isOf(Blocks.CAVE_AIR)
             && !state.isOf(Blocks.VOID_AIR);
     }
 
     private void infectBlock(BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        BlockState aboveState = world.getBlockState(pos.up());
+
+        if (shouldConvertToGrass(state, aboveState)) {
+            convertToGrassBlock(pos);
+        } else {
+            convertToPaleStone(pos);
+        }
+    }
+
+    private boolean shouldConvertToGrass(BlockState state, BlockState aboveState) {
+        return !aboveState.isSolid() && state.isSolid();
+    }
+
+    private void convertToGrassBlock(BlockPos pos) {
+        world.setBlockState(pos.up(), Blocks.AIR.getDefaultState());
+        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        world.setBlockState(pos, Blocks.GRASS_BLOCK.getDefaultState());
+    }
+
+    private void convertToPaleStone(BlockPos pos) {
         world.setBlockState(pos,
             world.getRandom().nextBoolean() ? ModBlocks.PALE_STONE.getDefaultState()
                 : ModBlocks.PALE_ROOTED_STONE.getDefaultState());
     }
 
     private void placeLabyrinthWall(BlockPos pos) {
-        ChunkPos chunkPos = world.getChunk(pos).getPos();
+        if (shouldSkipLabyrinthWall(pos)) {
+            return;
+        }
 
-        LabyrinthGenerator.generateLabyrinthChunkIfNotInfected(chunkPos);
+        ensureLabyrinthGenerated(pos);
 
         if (LabyrinthGenerator.shouldPlaceWallAt(pos)) {
             buildTreeWall(pos);
         }
+    }
+
+    private boolean shouldSkipLabyrinthWall(BlockPos pos) {
+        return world.getBlockState(pos.up()).isSolid();
+    }
+
+    private void ensureLabyrinthGenerated(BlockPos pos) {
+        ChunkPos chunkPos = world.getChunk(pos).getPos();
+        LabyrinthGenerator.generateLabyrinthChunkIfNotInfected(chunkPos);
     }
 
     private void buildTreeWall(BlockPos pos) {
@@ -131,7 +162,7 @@ public class InfectionCursor {
     }
 
     private boolean shouldSpawnMushroom() {
-        return world.getRandom().nextFloat() <= 0.15f;
+        return world.getRandom().nextFloat() <= 0.05f;
     }
 
     private void placeMushroom(BlockPos mushroomPos) {
@@ -148,12 +179,14 @@ public class InfectionCursor {
 
         if (roll < 0.5f) {
             return 1;
-        } else if (roll < 0.8f) {
+        } else if (roll < 0.78f) {
             return 2;
-        } else if (roll < 0.95f) {
+        } else if (roll < 0.88f) {
             return 3;
-        } else {
+        } else if (roll < 0.95f) {
             return 4;
+        } else {
+            return 5;
         }
     }
 

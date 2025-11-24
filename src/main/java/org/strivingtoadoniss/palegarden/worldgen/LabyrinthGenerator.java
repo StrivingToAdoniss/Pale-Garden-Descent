@@ -9,9 +9,11 @@ import java.util.*;
 
 public class LabyrinthGenerator {
 
+    private LabyrinthGenerator() {}
+
     private static final int CELL_SIZE = 4;
     private static final int GRID_SIZE = 4;
-    private static final int WALL_HEIGHT = 5;
+    private static final int WALL_HEIGHT = 6;
     @Setter
     private static ServerWorld world;
 
