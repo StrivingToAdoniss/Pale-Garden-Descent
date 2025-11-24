@@ -31,9 +31,10 @@ public class PalegardenBlockLootTableProvider extends FabricBlockLootTableProvid
 
     private void addPaleMushroomDrop() {
         Block block = ModBlocks.PALE_MUSHROOM;
+        var amountValues = PaleMushroomBlock.AMOUNT.getValues();
         LootTable.Builder builder = LootTable.builder();
         
-        for (int i = 1; i <= 4; i++) {
+        for (int i = amountValues.getFirst(); i <= amountValues.getLast(); i++) {
             builder.pool(
                 LootPool.builder()
                     .rolls(ConstantLootNumberProvider.create(1.0f))

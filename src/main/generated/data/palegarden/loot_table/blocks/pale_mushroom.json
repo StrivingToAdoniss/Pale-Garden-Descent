@@ -8,7 +8,7 @@
           "block": "palegarden:pale_mushroom",
           "condition": "minecraft:block_state_property",
           "properties": {
-            "pickles": "1"
+            "mushrooms": "1"
           }
         }
       ],
@@ -34,7 +34,7 @@
           "block": "palegarden:pale_mushroom",
           "condition": "minecraft:block_state_property",
           "properties": {
-            "pickles": "2"
+            "mushrooms": "2"
           }
         }
       ],
@@ -60,7 +60,7 @@
           "block": "palegarden:pale_mushroom",
           "condition": "minecraft:block_state_property",
           "properties": {
-            "pickles": "3"
+            "mushrooms": "3"
           }
         }
       ],
@@ -86,7 +86,7 @@
           "block": "palegarden:pale_mushroom",
           "condition": "minecraft:block_state_property",
           "properties": {
-            "pickles": "4"
+            "mushrooms": "4"
           }
         }
       ],
@@ -97,6 +97,32 @@
             {
               "add": false,
               "count": 4.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "palegarden:pale_mushroom"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "block": "palegarden:pale_mushroom",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "mushrooms": "5"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": 5.0,
               "function": "minecraft:set_count"
             }
           ],

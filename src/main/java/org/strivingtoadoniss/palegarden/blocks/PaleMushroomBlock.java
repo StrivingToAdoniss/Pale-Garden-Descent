@@ -8,19 +8,19 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import org.strivingtoadoniss.palegarden.ModBlocks;
 
 public class PaleMushroomBlock extends PlantBlock {
-    public static final IntProperty AMOUNT = Properties.PICKLES;
+    public static final IntProperty AMOUNT = IntProperty.of("mushrooms", 1, 5);
 
     protected static final VoxelShape ONE_MUSHROOM_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 3.9, 9.0);
     protected static final VoxelShape TWO_MUSHROOMS_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 9.5, 5.4, 8.5);
-    protected static final VoxelShape THREE_MUSHROOMS_SHAPE = Block.createCuboidShape(5.5, 0.0, 5.5, 11.0, 5.4, 10.5d);
+    protected static final VoxelShape THREE_MUSHROOMS_SHAPE = Block.createCuboidShape(5.5, 0.0, 5.5, 11.0, 5.4, 10.5);
     protected static final VoxelShape FOUR_MUSHROOMS_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.5, 10.5, 5.4, 11.0);
+    protected static final VoxelShape FIVE_MUSHROOMS_SHAPE = Block.createCuboidShape(3.5, 0.0, 3.5, 13.0, 7.5, 12.5);
 
     public static final MapCodec<PaleMushroomBlock> CODEC = createCodec(PaleMushroomBlock::new);
 
@@ -47,6 +47,7 @@ public class PaleMushroomBlock extends PlantBlock {
             case 2 -> TWO_MUSHROOMS_SHAPE;
             case 3 -> THREE_MUSHROOMS_SHAPE;
             case 4 -> FOUR_MUSHROOMS_SHAPE;
+            case 5 -> FIVE_MUSHROOMS_SHAPE;
             default -> ONE_MUSHROOM_SHAPE;
         };
     }
@@ -55,7 +56,7 @@ public class PaleMushroomBlock extends PlantBlock {
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
         return !context.shouldCancelInteraction() 
             && context.getStack().getItem() == this.asItem()
-            && state.get(AMOUNT) < 4 
+            && state.get(AMOUNT) < AMOUNT.getValues().getLast()
             || super.canReplace(state, context);
     }
 
@@ -64,7 +65,7 @@ public class PaleMushroomBlock extends PlantBlock {
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
         if (blockState.isOf(this)) {
             int currentAmount = blockState.get(AMOUNT);
-            if (currentAmount < 4) {
+            if (currentAmount < AMOUNT.getValues().getLast()) {
                 return blockState.with(AMOUNT, currentAmount + 1);
             }
         }
