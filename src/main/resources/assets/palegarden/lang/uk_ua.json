@@ -1,9 +1,12 @@
 {
+  "block.palegarden.pale_mushroom": "Блідий гриб",
   "block.palegarden.pale_rooted_stone": "Блідий вкорінений камінь",
   "block.palegarden.pale_stone": "Блідий камінь",
-  "block.palegarden.pale_mushroom": "Блідий гриб",
+  "item.minecraft.potion.effect.pale_potion_1": "Зілля третьої руки",
+  "item.minecraft.potion.effect.pale_potion_2": "Зілля велетенських ребер",
+  "item.minecraft.potion.effect.pale_potion_3": "Зілля золотого метаболізму",
+  "item.palegarden.pale_mushroom": "Блідий гриб",
   "item.palegarden.pale_rooted_stone": "Блідий вкорінений камінь",
   "item.palegarden.pale_stone": "Блідий камінь",
-  "item.palegarden.pale_mushroom": "Блідий гриб",
   "itemgroup.palegarden.pale_garden_group": "Блідий сад"
 }

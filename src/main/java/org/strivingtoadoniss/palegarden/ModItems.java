@@ -2,7 +2,6 @@ package org.strivingtoadoniss.palegarden;
 
 import java.util.function.Function;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -29,7 +28,8 @@ public class ModItems {
         return item;
     }
 
-    public static final RegistryKey<ItemGroup> CUSTOM_ITEM_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), Identifier.of(Palegarden.MOD_ID, "item_group"));
+    public static final RegistryKey<ItemGroup> CUSTOM_ITEM_GROUP_KEY = RegistryKey.of(
+        Registries.ITEM_GROUP.getKey(), Identifier.of(Palegarden.MOD_ID, "item_group"));
     public static final ItemGroup CUSTOM_ITEM_GROUP = FabricItemGroup.builder()
         .icon(() -> new ItemStack(ModBlocks.PALE_ROOTED_STONE))
         .displayName(Text.translatable("itemgroup.palegarden.pale_garden_group"))

@@ -14,8 +14,9 @@ public class Palegarden implements ModInitializer {
     public void onInitialize() {
         ModBlocks.initialize();
         ModItems.initialize();
-        InfectionSystem.register();
+        ModPotions.register();
         ModCommands.register();
         ModRegistries.register();
+        InfectionSystem.register();
     }
 }
