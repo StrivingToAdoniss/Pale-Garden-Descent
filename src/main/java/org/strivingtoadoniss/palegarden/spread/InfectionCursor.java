@@ -3,7 +3,9 @@ package org.strivingtoadoniss.palegarden.spread;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -11,11 +13,19 @@ import net.minecraft.util.math.Direction;
 
 import java.util.*;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.chunk.Chunk;
 import org.strivingtoadoniss.palegarden.ModBlocks;
 import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
+import org.strivingtoadoniss.palegarden.worldgen.ModBiomes;
 import org.strivingtoadoniss.palegarden.worldgen.PaleOakTreeGenerator;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.PalettedContainer;
+import net.minecraft.world.chunk.ChunkSection;
 
 public class InfectionCursor {
 
@@ -27,6 +37,7 @@ public class InfectionCursor {
 
     private final Queue<BlockPos> searchQueue = new LinkedList<>();
     private final Set<BlockPos> visited = new HashSet<>();
+    private final Set<WorldChunk> modifiedChunks = new HashSet<>();
 
     @Getter
     private boolean finished = false;
@@ -59,6 +70,8 @@ public class InfectionCursor {
                 return;
             }
         }
+        
+        sendChunkUpdates();
     }
 
     private boolean canInfect(BlockPos pos) {
@@ -90,6 +103,67 @@ public class InfectionCursor {
             convertToGrassBlock(pos);
         } else {
             convertToPaleStone(pos);
+        }
+
+        setPaleGardenBiome(pos);
+    }
+
+    private void setPaleGardenBiome(BlockPos pos) {
+        var biomeEntry = getInfectedBiomeEntry();
+        if (biomeEntry.isEmpty()) return;
+
+        int quartX = (pos.getX() & 15) >> 2;
+        int quartZ = (pos.getZ() & 15) >> 2;
+        Chunk chunk = world.getChunk(pos);
+
+        boolean changed = replaceBiomeInColumn(chunk, quartX, quartZ, biomeEntry.get());
+
+        if (changed) {
+            markChunkAsModified(chunk);
+        }
+    }
+
+    private boolean replaceBiomeInColumn(Chunk chunk, int quartX, int quartZ, RegistryEntry<Biome> newBiome) {
+        boolean anyChanged = false;
+
+        for (ChunkSection section : chunk.getSectionArray()) {
+            if (replaceBiomeInSection(section, quartX, quartZ, newBiome)) {
+                anyChanged = true;
+            }
+        }
+
+        return anyChanged;
+    }
+
+    private boolean replaceBiomeInSection(ChunkSection section, int quartX, int quartZ, RegistryEntry<Biome> newBiome) {
+        var container = (PalettedContainer<RegistryEntry<Biome>>) section.getBiomeContainer();
+        boolean changed = false;
+
+        container.lock();
+        try {
+            for (int quartY = 0; quartY < 4; quartY++) {
+                if (!container.get(quartX, quartY, quartZ).equals(newBiome)) {
+                    container.swapUnsafe(quartX, quartY, quartZ, newBiome);
+                    changed = true;
+                }
+            }
+        } finally {
+            container.unlock();
+        }
+
+        return changed;
+    }
+
+    private Optional<RegistryEntry.Reference<Biome>> getInfectedBiomeEntry() {
+        return world.getRegistryManager()
+            .getOrThrow(RegistryKeys.BIOME)
+            .getOptional(ModBiomes.INFECTED_PALE_GARDEN);
+    }
+
+    private void markChunkAsModified(Chunk chunk) {
+        if (chunk instanceof WorldChunk worldChunk) {
+            modifiedChunks.add(worldChunk);
+            worldChunk.markNeedsSaving();
         }
     }
 
@@ -199,6 +273,22 @@ public class InfectionCursor {
                 visited.add(neighbor);
             }
         }
+    }
+
+    private void sendChunkUpdates() {
+        if (modifiedChunks.isEmpty()) {
+            return;
+        }
+
+        List<ChunkBiomeDataS2CPacket.Serialized> serializedChunks = new ArrayList<>();
+        for (WorldChunk chunk : modifiedChunks) {
+            serializedChunks.add(new ChunkBiomeDataS2CPacket.Serialized(chunk));
+        }
+
+        ChunkBiomeDataS2CPacket packet = new ChunkBiomeDataS2CPacket(serializedChunks);
+        world.getPlayers().forEach(player -> player.networkHandler.sendPacket(packet));
+
+        modifiedChunks.clear();
     }
 
     public void finishImmediately() {

@@ -1,8 +1,9 @@
 // 1.21.4	-999999999-01-01T00:00:00	Pale Garden: Descent/Model Definitions
 9f4fb3fdd150dd028b82551c8ba85af46cc6dc5d assets/palegarden/blockstates/pale_rooted_stone.json
 f9bb708429db5919f08fd118538178844e49b4ba assets/palegarden/blockstates/pale_stone.json
-3217b43d6c68c8f1ba7ce44ac9cf8cd11f6f2724 assets/palegarden/items/pale_mushroom.json
+1b8edb638d6d17adae96d343539db4dd5c9e1a4e assets/palegarden/items/pale_mushroom.json
 a84fe62ba0ea52ef6982c45f4583824793bd2327 assets/palegarden/items/pale_rooted_stone.json
 1b7e961da1a2962e55c5cd968f1f9a287d4331cc assets/palegarden/items/pale_stone.json
 efe8bcc57c95806ba32402f7ad5c5a87d6df5485 assets/palegarden/models/block/pale_rooted_stone.json
 56d2dc609cc51db298bef5ba28804086ca4ce3fe assets/palegarden/models/block/pale_stone.json
+3fdf0d866de0194ced1c289a313f7da354d5b973 assets/palegarden/models/item/pale_mushroom.json
