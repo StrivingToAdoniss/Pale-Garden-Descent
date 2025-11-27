@@ -54,9 +54,12 @@ public class ModPotions {
         Identifier.of(Palegarden.MOD_ID, "pale_potion_1"),
         new Potion("pale_potion_1",
             new StatusEffectInstance(
-                StatusEffects.NAUSEA,
-                3600,
-                0
+                ModEffects.THIRD_HAND,
+                -1,
+                0,
+                false,
+                false,
+                true
             )
         )
     );

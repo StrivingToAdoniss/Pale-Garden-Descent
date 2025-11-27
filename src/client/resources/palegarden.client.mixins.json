@@ -4,6 +4,7 @@
   "package": "org.strivingtoadoniss.palegarden.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "MixinInventoryScreen"
   ],
   "injectors": {
     "defaultRequire": 1
