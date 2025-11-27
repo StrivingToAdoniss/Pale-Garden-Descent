@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "got_third_hand_effect": {
+      "conditions": {
+        "effects": {
+          "palegarden:third_hand": {}
+        }
+      },
+      "trigger": "minecraft:effects_changed"
+    }
+  },
+  "display": {
+    "description": "Ви мутували! Тепер це назавжди.",
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:potion"
+    },
+    "title": "Третя рука"
+  },
+  "requirements": [
+    [
+      "got_third_hand_effect"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -14,6 +14,7 @@ public class PalegardenDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(PalegardenBlockTagProvider::new);
         pack.addProvider(PalegardenModelProvider::new);
         pack.addProvider(ModWorldGenerator::new);
+        pack.addProvider(PalegardenAdvancementProvider::new);
     }
 
     @Override

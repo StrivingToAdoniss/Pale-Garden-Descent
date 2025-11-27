@@ -18,6 +18,7 @@ public class Palegarden implements ModInitializer {
         ModCommands.register();
         ModEffects.register();
         ModRegistries.register();
+        EffectManager.register();
         InfectionSystem.register();
     }
 }
