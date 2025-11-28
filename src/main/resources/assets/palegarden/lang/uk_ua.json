@@ -17,5 +17,7 @@
   "advancement.palegarden.obtained_third_hand.title": "Третя рука",
   "advancement.palegarden.obtained_third_hand.description": "Ви мутували! Тепер це назавжди.",
   "advancement.palegarden.obtained_giant_ribcage.title": "Гігантські ребра",
-  "advancement.palegarden.obtained_giant_ribcage.description": "Ваші ребра виросли, щоб краще служити вам."
+  "advancement.palegarden.obtained_giant_ribcage.description": "Ваші ребра виросли, щоб краще служити вам.",
+  "advancement.palegarden.obtained_golden_metabolism.title": "Золотий метаболізм",
+  "advancement.palegarden.obtained_golden_metabolism.description": "Бро, ти тепер гриб."
 }

@@ -1,0 +1,31 @@
+{
+  "criteria": {
+    "got_golden_metabolism_effect": {
+      "conditions": {
+        "effects": {
+          "palegarden:golden_metabolism": {}
+        }
+      },
+      "trigger": "minecraft:effects_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.palegarden.obtained_golden_metabolism.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:potion"
+    },
+    "title": {
+      "translate": "advancement.palegarden.obtained_golden_metabolism.title"
+    }
+  },
+  "requirements": [
+    [
+      "got_golden_metabolism_effect"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

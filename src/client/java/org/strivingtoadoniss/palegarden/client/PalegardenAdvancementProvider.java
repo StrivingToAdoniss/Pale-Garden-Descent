@@ -27,6 +27,25 @@ public class PalegardenAdvancementProvider extends FabricAdvancementProvider {
     public void generateAdvancement(RegistryWrapper.WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
         buildThirdHandAdvancement(consumer);
         buildGiantRibcageAdvancement(consumer);
+        buildGoldenMetabolismAdvancement(consumer);
+    }
+
+    private void buildGoldenMetabolismAdvancement(Consumer<AdvancementEntry> consumer) {
+        Advancement.Builder.create()
+            .display(
+                Items.POTION,
+                Text.translatable("advancement.palegarden.obtained_golden_metabolism.title"),
+                Text.translatable("advancement.palegarden.obtained_golden_metabolism.description"),
+                null,
+                AdvancementFrame.CHALLENGE,
+                true,
+                true,
+                false
+            )
+            .criterion("got_golden_metabolism_effect", EffectsChangedCriterion.Conditions.create(
+                EntityEffectPredicate.Builder.create().addEffect(ModEffects.GOLDEN_METABOLISM)
+            ))
+            .build(consumer, Identifier.of(Palegarden.MOD_ID, "obtained_golden_metabolism").toString());
     }
 
     private static void buildGiantRibcageAdvancement(Consumer<AdvancementEntry> consumer) {

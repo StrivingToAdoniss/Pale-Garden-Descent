@@ -17,5 +17,7 @@
   "advancement.palegarden.obtained_third_hand.title": "Third Hand",
   "advancement.palegarden.obtained_third_hand.description": "You have mutated! This is now permanent.",
   "advancement.palegarden.obtained_giant_ribcage.title": "Giant Ribcage",
-  "advancement.palegarden.obtained_giant_ribcage.description": "Your ribs have grown to serve you better."
+  "advancement.palegarden.obtained_giant_ribcage.description": "Your ribs have grown to serve you better.",
+  "advancement.palegarden.obtained_golden_metabolism.title": "Golden Metabolism",
+  "advancement.palegarden.obtained_golden_metabolism.description": "Bro, you are a mushroom now."
 }
