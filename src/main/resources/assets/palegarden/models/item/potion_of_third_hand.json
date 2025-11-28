@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "palegarden:item/potion_of_third_hand"
+  }
+}

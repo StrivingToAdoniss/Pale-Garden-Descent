@@ -4,10 +4,13 @@
   "package": "org.strivingtoadoniss.palegarden.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "MixinElytraFeatureRenderer",
     "MixinInventoryScreen",
-    "MixinLivingEntityRenderState",
+    "MixinItemModelManager",
+    "MixinItemRenderStateAccessor",
+    "MixinLayerRenderStateAccessor",
     "MixinLivingEntityRenderer",
-    "MixinElytraFeatureRenderer"
+    "MixinLivingEntityRenderState"
   ],
   "injectors": {
     "defaultRequire": 1
