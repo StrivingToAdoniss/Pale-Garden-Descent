@@ -11,5 +11,9 @@
   "biome.palegarden.infected_pale_garden": "Інфікований блідий сад",
   "itemgroup.palegarden.pale_garden_group": "Блідий сад",
   "effect.palegarden.third_hand": "Третя рука",
-  "effect.palegarden.giant_ribcage": "Гігантські ребра"
+  "effect.palegarden.giant_ribcage": "Гігантські ребра",
+  "advancement.palegarden.obtained_third_hand.title": "Третя рука",
+  "advancement.palegarden.obtained_third_hand.description": "Ви мутували! Тепер це назавжди.",
+  "advancement.palegarden.obtained_giant_ribcage.title": "Гігантські ребра",
+  "advancement.palegarden.obtained_giant_ribcage.description": "Ваші ребра виросли, щоб краще служити вам."
 }

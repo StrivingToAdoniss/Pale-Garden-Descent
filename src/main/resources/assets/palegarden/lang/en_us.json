@@ -11,5 +11,9 @@
   "biome.palegarden.infected_pale_garden": "Infected Pale Garden",
   "itemgroup.palegarden.pale_garden_group": "Pale Garden",
   "effect.palegarden.third_hand": "Third Hand",
-  "effect.palegarden.giant_ribcage": "Giant Ribcage"
+  "effect.palegarden.giant_ribcage": "Giant Ribcage",
+  "advancement.palegarden.obtained_third_hand.title": "Third Hand",
+  "advancement.palegarden.obtained_third_hand.description": "You have mutated! This is now permanent.",
+  "advancement.palegarden.obtained_giant_ribcage.title": "Giant Ribcage",
+  "advancement.palegarden.obtained_giant_ribcage.description": "Your ribs have grown to serve you better."
 }

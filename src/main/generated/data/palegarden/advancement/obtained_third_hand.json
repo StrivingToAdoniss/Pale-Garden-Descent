@@ -10,13 +10,17 @@
     }
   },
   "display": {
-    "description": "Ви мутували! Тепер це назавжди.",
-    "frame": "goal",
+    "description": {
+      "translate": "advancement.palegarden.obtained_third_hand.description"
+    },
+    "frame": "challenge",
     "icon": {
       "count": 1,
       "id": "minecraft:potion"
     },
-    "title": "Третя рука"
+    "title": {
+      "translate": "advancement.palegarden.obtained_third_hand.title"
+    }
   },
   "requirements": [
     [

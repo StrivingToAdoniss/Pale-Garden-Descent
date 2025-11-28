@@ -25,12 +25,34 @@ public class PalegardenAdvancementProvider extends FabricAdvancementProvider {
 
     @Override
     public void generateAdvancement(RegistryWrapper.WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
+        buildThirdHandAdvancement(consumer);
+        buildGiantRibcageAdvancement(consumer);
+    }
 
+    private static void buildGiantRibcageAdvancement(Consumer<AdvancementEntry> consumer) {
         Advancement.Builder.create()
             .display(
                 Items.POTION,
-                Text.literal("Третя рука"),
-                Text.literal("Ви мутували! Тепер це назавжди."),
+                Text.translatable("advancement.palegarden.obtained_giant_ribcage.title"),
+                Text.translatable("advancement.palegarden.obtained_giant_ribcage.description"),
+                null,
+                AdvancementFrame.CHALLENGE,
+                true,
+                true,
+                false
+            )
+            .criterion("got_giant_ribcage_effect", EffectsChangedCriterion.Conditions.create(
+                EntityEffectPredicate.Builder.create().addEffect(ModEffects.GIANT_RIBCAGE)
+            ))
+            .build(consumer, Identifier.of(Palegarden.MOD_ID, "obtained_giant_ribcage").toString());
+    }
+
+    private static void buildThirdHandAdvancement(Consumer<AdvancementEntry> consumer) {
+        Advancement.Builder.create()
+            .display(
+                Items.POTION,
+                Text.translatable("advancement.palegarden.obtained_third_hand.title"),
+                Text.translatable("advancement.palegarden.obtained_third_hand.description"),
                 null,
                 AdvancementFrame.CHALLENGE,
                 true,

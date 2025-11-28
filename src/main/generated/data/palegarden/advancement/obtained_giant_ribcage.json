@@ -1,0 +1,31 @@
+{
+  "criteria": {
+    "got_giant_ribcage_effect": {
+      "conditions": {
+        "effects": {
+          "palegarden:giant_ribcage": {}
+        }
+      },
+      "trigger": "minecraft:effects_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.palegarden.obtained_giant_ribcage.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:potion"
+    },
+    "title": {
+      "translate": "advancement.palegarden.obtained_giant_ribcage.title"
+    }
+  },
+  "requirements": [
+    [
+      "got_giant_ribcage_effect"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
