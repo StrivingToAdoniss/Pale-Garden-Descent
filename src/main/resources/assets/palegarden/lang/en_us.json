@@ -2,13 +2,14 @@
   "block.palegarden.pale_mushroom": "Pale Mushroom",
   "block.palegarden.pale_rooted_stone": "Pale Rooted Stone",
   "block.palegarden.pale_stone": "Pale Stone",
-  "item.minecraft.potion.effect.pale_potion_1": "Potion of the Third Hand",
-  "item.minecraft.potion.effect.pale_potion_2": "Potion of Giant Ribcage",
+  "item.minecraft.potion.effect.potion_of_third_hand": "Potion of the Third Hand",
+  "item.minecraft.potion.effect.potion_of_giant_ribcage": "Potion of Giant Ribcage",
   "item.minecraft.potion.effect.pale_potion_3": "Potion of Golden Metabolism",
   "item.palegarden.pale_mushroom": "Pale Mushroom",
   "item.palegarden.pale_rooted_stone": "Pale Rooted Stone",
   "item.palegarden.pale_stone": "Pale Stone",
   "biome.palegarden.infected_pale_garden": "Infected Pale Garden",
   "itemgroup.palegarden.pale_garden_group": "Pale Garden",
-  "effect.palegarden.third_hand": "Third Hand"
+  "effect.palegarden.third_hand": "Third Hand",
+  "effect.palegarden.giant_ribcage": "Giant Ribcage"
 }

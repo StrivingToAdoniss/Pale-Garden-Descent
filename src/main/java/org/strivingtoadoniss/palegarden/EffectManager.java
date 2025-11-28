@@ -29,7 +29,7 @@ public class EffectManager {
             boolean hasAdvancement = player.getAdvancementTracker().getProgress(advancement).isDone();
 
             if (hasAdvancement && !player.hasStatusEffect(ModEffects.THIRD_HAND)) {
-                player.addStatusEffect(ModPotions.PALE_POTION_1.getEffects().getFirst());
+                player.addStatusEffect(ModPotions.POTION_OF_THIRD_HAND.getEffects().getFirst());
             }
         }
     }

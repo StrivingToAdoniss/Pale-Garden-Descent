@@ -4,7 +4,10 @@
   "package": "org.strivingtoadoniss.palegarden.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "MixinInventoryScreen"
+    "MixinInventoryScreen",
+    "MixinLivingEntityRenderState",
+    "MixinLivingEntityRenderer",
+    "MixinElytraFeatureRenderer"
   ],
   "injectors": {
     "defaultRequire": 1

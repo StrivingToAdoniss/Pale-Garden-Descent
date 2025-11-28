@@ -2,13 +2,14 @@
   "block.palegarden.pale_mushroom": "Блідий гриб",
   "block.palegarden.pale_rooted_stone": "Блідий вкорінений камінь",
   "block.palegarden.pale_stone": "Блідий камінь",
-  "item.minecraft.potion.effect.pale_potion_1": "Зілля третьої руки",
-  "item.minecraft.potion.effect.pale_potion_2": "Зілля велетенських ребер",
+  "item.minecraft.potion.effect.potion_of_third_hand": "Зілля третьої руки",
+  "item.minecraft.potion.effect.potion_of_giant_ribcage": "Зілля гігантських ребер",
   "item.minecraft.potion.effect.pale_potion_3": "Зілля золотого метаболізму",
   "item.palegarden.pale_mushroom": "Блідий гриб",
   "item.palegarden.pale_rooted_stone": "Блідий вкорінений камінь",
   "item.palegarden.pale_stone": "Блідий камінь",
   "biome.palegarden.infected_pale_garden": "Інфікований блідий сад",
   "itemgroup.palegarden.pale_garden_group": "Блідий сад",
-  "effect.palegarden.third_hand": "Третя рука"
+  "effect.palegarden.third_hand": "Третя рука",
+  "effect.palegarden.giant_ribcage": "Гігантські ребра"
 }

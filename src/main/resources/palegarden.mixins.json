@@ -4,6 +4,8 @@
   "package": "org.strivingtoadoniss.palegarden.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "MixinScreenHandler",
+    "MixinLivingEntity",
     "MixinPlayerEntity",
     "MixinPlayerScreenHandler",
     "SlotAccessor"

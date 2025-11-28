@@ -17,9 +17,9 @@ public class ModPotions {
     public static void register() {
         ItemGroupEvents.modifyEntriesEvent(ModItems.CUSTOM_ITEM_GROUP_KEY).register(itemGroup -> {
             itemGroup.add(PotionContentsComponent.createStack(Items.POTION,
-                Registries.POTION.getEntry(PALE_POTION_1)));
+                Registries.POTION.getEntry(POTION_OF_THIRD_HAND)));
             itemGroup.add(PotionContentsComponent.createStack(Items.POTION,
-                Registries.POTION.getEntry(PALE_POTION_2)));
+                Registries.POTION.getEntry(POTION_OF_GIANT_RIBCAGE)));
             itemGroup.add(PotionContentsComponent.createStack(Items.POTION,
                 Registries.POTION.getEntry(PALE_POTION_3)));
         });
@@ -28,31 +28,31 @@ public class ModPotions {
             builder.registerPotionRecipe(
                 Potions.WATER,
                 ModBlocks.PALE_MUSHROOM.asItem(),
-                Registries.POTION.getEntry(PALE_POTION_1)
+                Registries.POTION.getEntry(POTION_OF_THIRD_HAND)
             )
         );
 
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder ->
             builder.registerPotionRecipe(
-                Registries.POTION.getEntry(PALE_POTION_1),
+                Registries.POTION.getEntry(POTION_OF_THIRD_HAND),
                 ModBlocks.PALE_MUSHROOM.asItem(),
-                Registries.POTION.getEntry(PALE_POTION_2)
+                Registries.POTION.getEntry(POTION_OF_GIANT_RIBCAGE)
             )
         );
 
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder ->
             builder.registerPotionRecipe(
-                Registries.POTION.getEntry(PALE_POTION_2),
+                Registries.POTION.getEntry(POTION_OF_GIANT_RIBCAGE),
                 ModBlocks.PALE_MUSHROOM.asItem(),
                 Registries.POTION.getEntry(PALE_POTION_3)
             )
         );
     }
 
-    public static final Potion PALE_POTION_1 = Registry.register(
+    public static final Potion POTION_OF_THIRD_HAND = Registry.register(
         Registries.POTION,
-        Identifier.of(Palegarden.MOD_ID, "pale_potion_1"),
-        new Potion("pale_potion_1",
+        Identifier.of(Palegarden.MOD_ID, "potion_of_third_hand"),
+        new Potion("potion_of_third_hand",
             new StatusEffectInstance(
                 ModEffects.THIRD_HAND,
                 -1,
@@ -64,14 +64,17 @@ public class ModPotions {
         )
     );
 
-    public static final Potion PALE_POTION_2 = Registry.register(
+    public static final Potion POTION_OF_GIANT_RIBCAGE = Registry.register(
         Registries.POTION,
-        Identifier.of(Palegarden.MOD_ID, "pale_potion_2"),
-        new Potion("pale_potion_2",
+        Identifier.of(Palegarden.MOD_ID, "potion_of_giant_ribcage"),
+        new Potion("potion_of_giant_ribcage",
             new StatusEffectInstance(
-                StatusEffects.WITHER,
-                3600,
-                0
+                ModEffects.GIANT_RIBCAGE,
+                -1,
+                0,
+                false,
+                false,
+                true
             )
         )
     );

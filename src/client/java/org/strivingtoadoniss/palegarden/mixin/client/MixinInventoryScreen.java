@@ -53,15 +53,42 @@ public abstract class MixinInventoryScreen extends HandledScreen<PlayerScreenHan
 
     @Inject(method = "drawBackground", at = @At("TAIL"), cancellable = true)
     private void drawExtendedBackground(DrawContext context, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        boolean hasEffect = this.client != null && this.client.player != null
-            && this.client.player.hasStatusEffect(ModEffects.THIRD_HAND);
+        ci.cancel();
 
-        if (hasEffect) {
+        handleThirdHandEffect(context);
+        handleGiantRibcageEffect(context);
+    }
+
+    @Unique
+    private void handleThirdHandEffect(DrawContext context) {
+        boolean hasThirdHand = this.client != null && this.client.player != null
+                && this.client.player.hasStatusEffect(ModEffects.THIRD_HAND);
+
+        if (hasThirdHand) {
             addNewSlots();
-            drawNewRow(context, ci);
+            drawNewRow(context);
         } else {
             hideNewSlots();
         }
+    }
+
+    @Unique
+    private void handleGiantRibcageEffect(DrawContext context) {
+        boolean hasGiantRibcage = this.client != null && this.client.player != null
+                && this.client.player.hasStatusEffect(ModEffects.GIANT_RIBCAGE);
+
+        if (hasGiantRibcage) {
+            showElytraSlot();
+            drawNewElytraSlot(context);
+        } else {
+            hideElytraSlot();
+        }
+    }
+
+    @Unique
+    private void drawNewElytraSlot(DrawContext context) {
+        context.drawGuiTexture(RenderLayer::getGuiTextured, SLOT_TEXTURE, this.x + 4 + 4 * 18,
+            this.y + 25, 18, 18);
     }
 
     @Unique
@@ -109,6 +136,26 @@ public abstract class MixinInventoryScreen extends HandledScreen<PlayerScreenHan
                     ((SlotAccessor) slot).setY(-1000);
                 }
             }
+        }
+    }
+
+    @Unique
+    private void showElytraSlot() {
+        int elytraSlotIndex = 55;
+        if (elytraSlotIndex < this.handler.slots.size()) {
+            Slot slot = this.handler.slots.get(elytraSlotIndex);
+            ((SlotAccessor) slot).setX(5 + 4 * 18);
+            ((SlotAccessor) slot).setY(26);
+        }
+    }
+
+    @Unique
+    private void hideElytraSlot() {
+        int elytraSlotIndex = 55;
+        if (elytraSlotIndex < this.handler.slots.size()) {
+            Slot slot = this.handler.slots.get(elytraSlotIndex);
+            ((SlotAccessor) slot).setX(-1000);
+            ((SlotAccessor) slot).setY(-1000);
         }
     }
 
@@ -161,9 +208,7 @@ public abstract class MixinInventoryScreen extends HandledScreen<PlayerScreenHan
     }
 
     @Unique
-    private void drawNewRow(DrawContext context, CallbackInfo ci) {
-        ci.cancel();
-
+    private void drawNewRow(DrawContext context) {
         drawTopSection(context);
         drawNewInventoryRow(context);
         drawMainInventoryArea(context);
@@ -186,7 +231,8 @@ public abstract class MixinInventoryScreen extends HandledScreen<PlayerScreenHan
                 this.x, this.y + 83,
                 0, 83,
                 176, 18,
-                256, 256);
+                256, 256
+        );
     }
 
     @Unique
