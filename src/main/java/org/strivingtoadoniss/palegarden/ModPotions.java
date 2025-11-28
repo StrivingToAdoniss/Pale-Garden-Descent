@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
@@ -21,7 +20,7 @@ public class ModPotions {
             itemGroup.add(PotionContentsComponent.createStack(Items.POTION,
                 Registries.POTION.getEntry(POTION_OF_GIANT_RIBCAGE)));
             itemGroup.add(PotionContentsComponent.createStack(Items.POTION,
-                Registries.POTION.getEntry(PALE_POTION_3)));
+                Registries.POTION.getEntry(POTION_OF_GOLDEN_METABOLISM)));
         });
 
         FabricBrewingRecipeRegistryBuilder.BUILD.register(builder ->
@@ -44,7 +43,7 @@ public class ModPotions {
             builder.registerPotionRecipe(
                 Registries.POTION.getEntry(POTION_OF_GIANT_RIBCAGE),
                 ModBlocks.PALE_MUSHROOM.asItem(),
-                Registries.POTION.getEntry(PALE_POTION_3)
+                Registries.POTION.getEntry(POTION_OF_GOLDEN_METABOLISM)
             )
         );
     }
@@ -79,14 +78,17 @@ public class ModPotions {
         )
     );
 
-    public static final Potion PALE_POTION_3 = Registry.register(
+    public static final Potion POTION_OF_GOLDEN_METABOLISM = Registry.register(
         Registries.POTION,
-        Identifier.of(Palegarden.MOD_ID, "pale_potion_3"),
-        new Potion("pale_potion_3",
+        Identifier.of(Palegarden.MOD_ID, "potion_of_golden_metabolism"),
+        new Potion("potion_of_golden_metabolism",
             new StatusEffectInstance(
-                StatusEffects.SLOWNESS,
-                3600,
-                0
+                ModEffects.GOLDEN_METABOLISM,
+                -1,
+                0,
+                false,
+                false,
+                true
             )
         )
     );

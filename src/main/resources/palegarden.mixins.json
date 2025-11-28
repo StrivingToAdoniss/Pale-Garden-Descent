@@ -8,6 +8,8 @@
     "MixinLivingEntity",
     "MixinPlayerEntity",
     "MixinPlayerScreenHandler",
+    "MixinPlayerEntityHunger",
+    "MixinPlayerEntityFood",
     "SlotAccessor"
   ],
   "injectors": {

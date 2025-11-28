@@ -1,5 +1,6 @@
 package org.strivingtoadoniss.palegarden;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.AbstractBlock;
@@ -14,6 +15,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
+import org.strivingtoadoniss.palegarden.items.PaleMushroomItem;
 
 public class ModBlocks {
 
@@ -25,7 +27,8 @@ public class ModBlocks {
         });
     }
 
-    private static Block register(String name, Function<Settings, Block> blockFactory, AbstractBlock.Settings settings, boolean shouldRegisterItem) {
+    private static Block register(String name, Function<Settings, Block> blockFactory, AbstractBlock.Settings settings,
+            boolean shouldRegisterItem) {
         RegistryKey<Block> blockKey = keyOfBlock(name);
         Block block = blockFactory.apply(settings.registryKey(blockKey));
 
@@ -36,6 +39,18 @@ public class ModBlocks {
             Registry.register(Registries.ITEM, itemKey, blockItem);
         }
 
+        return Registry.register(Registries.BLOCK, blockKey, block);
+    }
+
+    private static Block registerWithCustomItem(String name, Function<Settings, Block> blockFactory,
+            AbstractBlock.Settings settings, BiFunction<Block, Item.Settings, BlockItem> itemFactory) {
+        RegistryKey<Block> blockKey = keyOfBlock(name);
+        Block block = blockFactory.apply(settings.registryKey(blockKey));
+
+        RegistryKey<Item> itemKey = keyOfItem(name);
+        BlockItem blockItem = itemFactory.apply(block, new Item.Settings().registryKey(itemKey));
+
+        Registry.register(Registries.ITEM, itemKey, blockItem);
         return Registry.register(Registries.BLOCK, blockKey, block);
     }
 
@@ -61,10 +76,10 @@ public class ModBlocks {
         true
     );
 
-    public static final Block PALE_MUSHROOM = register(
+    public static final Block PALE_MUSHROOM = registerWithCustomItem(
         "pale_mushroom",
         PaleMushroomBlock::new,
         AbstractBlock.Settings.copy(Blocks.BROWN_MUSHROOM),
-        true
+        PaleMushroomItem::new
     );
 }
