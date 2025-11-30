@@ -12,7 +12,7 @@ import net.minecraft.util.Formatting;
 public class PaleMushroomItem extends BlockItem {
 
     private static final FoodComponent FOOD_COMPONENT = new FoodComponent.Builder()
-        .nutrition(3)
+        .nutrition(1)
         .saturationModifier(0.3f)
         .alwaysEdible()
         .build();
