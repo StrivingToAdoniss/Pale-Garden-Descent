@@ -19,7 +19,7 @@ public abstract class MixinPlayerEntityHunger extends LivingEntity {
     @ModifyVariable(method = "addExhaustion", at = @At("HEAD"), argsOnly = true)
     private float increaseExhaustion(float exhaustion) {
         if (this.hasStatusEffect(ModEffects.GOLDEN_METABOLISM)) {
-            return exhaustion * 8F;
+            return exhaustion * 2F;
         }
 
         return exhaustion;
