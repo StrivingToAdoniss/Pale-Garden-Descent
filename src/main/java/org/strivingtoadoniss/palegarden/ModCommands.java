@@ -2,16 +2,31 @@ package org.strivingtoadoniss.palegarden;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.command.CommandSource;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.spread.InfectionStarter;
@@ -27,7 +42,21 @@ public class ModCommands {
             registerSetMaxTransformations(dispatcher);
             registerSetMaxInfectionRadius(dispatcher);
             registerStopAllInfections(dispatcher);
+            registerEffectClearCommand(dispatcher);
+
         });
+    }
+
+    private static final SuggestionProvider<ServerCommandSource> EFFECT_SUGGESTIONS = (context,
+            builder) -> CommandSource
+                    .suggestMatching(new String[] { "third_hand", "giant_ribcage", "golden_metabolism" }, builder);
+
+    private static void registerEffectClearCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(literal("effect_clear")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(argument("effect_name", word())
+                        .suggests(EFFECT_SUGGESTIONS)
+                        .executes(ModCommands::executeEffectClear)));
     }
 
     private static void registerStartSpreadCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -160,5 +189,87 @@ public class ModCommands {
         );
 
         return 1;
+    }
+
+    private static int executeEffectClear(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        String effectName = getString(context, "effect_name");
+
+        Optional<ClearableEffect> effectOpt = ClearableEffect.get(effectName);
+
+        if (effectOpt.isEmpty()) {
+            source.sendError(Text.literal("§cInvalid effect name."));
+            return 0;
+        }
+
+        ClearableEffect effectData = effectOpt.get();
+
+        try {
+            ServerPlayerEntity player = source.getPlayerOrThrow();
+            revokeEffectAdvancement(player, effectData);
+            clearEffectFromPlayer(player, effectData, source);
+            return 1;
+        } catch (Exception e) {
+            source.sendError(Text.literal("§cError: " + e.getMessage()));
+            return 0;
+        }
+    }
+
+    private static void revokeEffectAdvancement(ServerPlayerEntity player,
+        ClearableEffect effectData) {
+        Identifier advancementIdentifier = Identifier.of(effectData.advancementId);
+        AdvancementEntry advancementEntry = Objects.requireNonNull(player.getServer())
+            .getAdvancementLoader()
+            .get(advancementIdentifier);
+
+        if (advancementEntry != null) {
+            AdvancementProgress progress = player.getAdvancementTracker()
+                .getProgress(advancementEntry);
+            if (progress.isAnyObtained()) {
+                for (String criterion : progress.getObtainedCriteria()) {
+                    player.getAdvancementTracker().revokeCriterion(advancementEntry, criterion);
+                }
+            }
+        }
+    }
+
+    private static void clearEffectFromPlayer(ServerPlayerEntity player, ClearableEffect effectData,
+        ServerCommandSource source) {
+        boolean hadEffect = player.removeStatusEffect(effectData.effectEntry);
+
+        if (hadEffect) {
+            source.sendFeedback(
+                () -> Text.literal("§aCleared effect '" + effectData.commandName + "'"),
+                true
+            );
+        } else {
+            source.sendFeedback(() -> Text.literal(
+                    "§ePlayer did not have the '" + effectData.commandName + "' effect."),
+                true
+            );
+        }
+    }
+
+    private enum ClearableEffect {
+        THIRD_HAND("third_hand", ModEffects.THIRD_HAND, "palegarden:obtained_third_hand"),
+        GIANT_RIBCAGE("giant_ribcage", ModEffects.GIANT_RIBCAGE, "palegarden:obtained_giant_ribcage"),
+        GOLDEN_METABOLISM("golden_metabolism", ModEffects.GOLDEN_METABOLISM, "palegarden:obtained_golden_metabolism");
+
+        private static final Map<String, ClearableEffect> BY_NAME = Arrays.stream(values())
+            .collect(Collectors.toMap(e -> e.commandName, Function.identity()));
+
+        final String commandName;
+        final RegistryEntry<StatusEffect> effectEntry;
+        final String advancementId;
+
+        ClearableEffect(String commandName, RegistryEntry<StatusEffect> effectEntry, String advancementId) {
+            this.commandName = commandName;
+            this.effectEntry = effectEntry;
+            this.advancementId = advancementId;
+        }
+
+        public static Optional<ClearableEffect> get(String name) {
+            return Optional.ofNullable(BY_NAME.get(name));
+        }
     }
 }
