@@ -3,17 +3,16 @@ package org.strivingtoadoniss.palegarden.spread;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Direction;
 
 import java.util.*;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.Chunk;
 import org.strivingtoadoniss.palegarden.ModBlocks;
 import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
@@ -29,6 +28,7 @@ import net.minecraft.world.chunk.ChunkSection;
 
 public class InfectionCursor {
 
+    public static final int NEUGHBORS_SEARCH_RADIUS = 10;
     private final ServerWorld world;
     private final BlockPos origin;
 
@@ -85,6 +85,7 @@ public class InfectionCursor {
             && !state.isOf(ModBlocks.PALE_MUSHROOM)
             && !state.isOf(ModBlocks.PALE_STONE)
             && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
+            && !state.isOf(ModBlocks.COMET_CORE)
             && !state.isOf(Blocks.PALE_OAK_LOG)
             && !state.isOf(Blocks.PALE_OAK_LEAVES)
             && !state.isOf(Blocks.PALE_HANGING_MOSS)
@@ -196,7 +197,7 @@ public class InfectionCursor {
     }
 
     private boolean shouldSkipLabyrinthWall(BlockPos pos) {
-        return world.getBlockState(pos.up()).isSolid();
+        return world.getBlockState(pos.up()).isSolid() && InfectionStarter.isInImpactZone(pos);
     }
 
     private void ensureLabyrinthGenerated(BlockPos pos) {
@@ -264,16 +265,38 @@ public class InfectionCursor {
         }
     }
 
-    private void addNeighborsToQueue(BlockPos pos) {
-        for (Direction direction : Direction.values()) {
-            BlockPos neighbor = pos.offset(direction);
+   private void addNeighborsToQueue(BlockPos pos) {
+       for (int dx = -NEUGHBORS_SEARCH_RADIUS; dx <= NEUGHBORS_SEARCH_RADIUS; dx++) {
+           for (int dy = -NEUGHBORS_SEARCH_RADIUS; dy <= NEUGHBORS_SEARCH_RADIUS; dy++) {
+               for (int dz = -NEUGHBORS_SEARCH_RADIUS; dz <= NEUGHBORS_SEARCH_RADIUS; dz++) {
+                   tryAddNeighbor(pos, dx, dy, dz);
+               }
+           }
+       }
+   }
 
-            if (!visited.contains(neighbor) && world.isInBuildLimit(neighbor) && canInfect(neighbor)) {
-                searchQueue.add(neighbor);
-                visited.add(neighbor);
-            }
-        }
-    }
+   private void tryAddNeighbor(BlockPos pos, int dx, int dy, int dz) {
+       if (!isWithinSearchRadius(dx, dy, dz)) {
+           return;
+       }
+
+       BlockPos neighbor = pos.add(dx, dy, dz);
+
+       if (shouldAddNeighbor(neighbor)) {
+           searchQueue.add(neighbor);
+           visited.add(neighbor);
+       }
+   }
+
+   private boolean isWithinSearchRadius(int dx, int dy, int dz) {
+       return dx * dx + dy * dy + dz * dz <= NEUGHBORS_SEARCH_RADIUS * NEUGHBORS_SEARCH_RADIUS;
+   }
+
+   private boolean shouldAddNeighbor(BlockPos neighbor) {
+       return !visited.contains(neighbor)
+           && world.isInBuildLimit(neighbor)
+           && canInfect(neighbor);
+   }
 
     private void sendChunkUpdates() {
         if (modifiedChunks.isEmpty()) {
