@@ -31,6 +31,7 @@ import net.minecraft.util.math.BlockPos;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.spread.InfectionStarter;
 import org.strivingtoadoniss.palegarden.spread.InfectionSystem;
+import org.strivingtoadoniss.palegarden.worldgen.CometGorgeGenerator;
 
 public class ModCommands {
 
@@ -43,7 +44,7 @@ public class ModCommands {
             registerSetMaxInfectionRadius(dispatcher);
             registerStopAllInfections(dispatcher);
             registerEffectClearCommand(dispatcher);
-
+            registerGenerateGorge(dispatcher);
         });
     }
 
@@ -245,8 +246,39 @@ public class ModCommands {
         } else {
             source.sendFeedback(() -> Text.literal(
                     "§ePlayer did not have the '" + effectData.commandName + "' effect."),
-                true
+                true);
+        }
+    }
+
+
+    private static void registerGenerateGorge(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(literal("palegarden")
+            .then(literal("generate_gorge")
+                .requires(source -> source.hasPermissionLevel(2))
+                .executes(ModCommands::executeGenerateGorge)));
+    }
+
+    private static int executeGenerateGorge(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+
+        try {
+            ServerPlayerEntity player = source.getPlayerOrThrow();
+            ServerWorld world = player.getServerWorld();
+            BlockPos playerPos = player.getBlockPos();
+
+            BlockPos surfacePos = world.getTopPosition(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, playerPos);
+            CometGorgeGenerator.generateGorge(world, surfacePos, world.getRandom());
+
+            source.sendFeedback(
+                    () -> Text.literal("§aComet gorge generated at: " +
+                            surfacePos.getX() + ", " + surfacePos.getY() + ", " + surfacePos.getZ()),
+                    true
             );
+
+            return 1;
+        } catch (Exception e) {
+            source.sendError(Text.literal("§cError: " + e.getMessage()));
+            return 0;
         }
     }
 
