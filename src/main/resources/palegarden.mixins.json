@@ -10,7 +10,8 @@
     "MixinPlayerScreenHandler",
     "MixinPlayerEntityHunger",
     "MixinPlayerEntityFood",
-    "SlotAccessor"
+    "SlotAccessor",
+    "MixinAbstractBlock"
   ],
   "injectors": {
     "defaultRequire": 1

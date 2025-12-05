@@ -7,6 +7,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -16,6 +17,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import org.strivingtoadoniss.palegarden.blocks.CometCoreBlock;
 import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
+import org.strivingtoadoniss.palegarden.blocks.RegeneratingPaleLogBlock;
 import org.strivingtoadoniss.palegarden.items.PaleMushroomItem;
 
 public class ModBlocks {
@@ -67,14 +69,18 @@ public class ModBlocks {
     public static final Block PALE_STONE = register(
         "pale_stone",
         Block::new,
-        AbstractBlock.Settings.copy(Blocks.STONE),
+        AbstractBlock.Settings.copy(Blocks.STONE)
+            .strength(-1.0f, 3600000.0f)
+            .dropsNothing(),
         true
     );
 
     public static final Block PALE_ROOTED_STONE = register(
         "pale_rooted_stone",
         Block::new,
-        AbstractBlock.Settings.copy(Blocks.STONE),
+        AbstractBlock.Settings.copy(Blocks.STONE)
+            .strength(-1.0f, 3600000.0f)
+            .dropsNothing(),
         true
     );
 
@@ -84,11 +90,25 @@ public class ModBlocks {
         AbstractBlock.Settings.copy(Blocks.BROWN_MUSHROOM),
         PaleMushroomItem::new);
 
+    public static final Block REGENERATING_PALE_LOG = register(
+        "regenerating_pale_log",
+        RegeneratingPaleLogBlock::new,
+        AbstractBlock.Settings.copy(Blocks.PALE_OAK_LOG)
+            .mapColor(MapColor.CLEAR)
+            .noCollision()
+            .strength(-1.0f, 3600000.0f)
+            .air()
+            .dropsNothing()
+            .nonOpaque(),
+        false
+    );
+
     public static final Block COMET_CORE = register(
         "comet_core",
         CometCoreBlock::new,
         AbstractBlock.Settings.copy(Blocks.SCULK)
             .luminance(state -> 15)
             .strength(50.0f, 1200.0f),
-        true);
+        true
+    );
 }

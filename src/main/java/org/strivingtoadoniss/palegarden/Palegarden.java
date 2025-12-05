@@ -20,5 +20,6 @@ public class Palegarden implements ModInitializer {
         ModRegistries.register();
         EffectManager.register();
         InfectionSystem.register();
+        PaleGardenEvents.initialize();
     }
 }
