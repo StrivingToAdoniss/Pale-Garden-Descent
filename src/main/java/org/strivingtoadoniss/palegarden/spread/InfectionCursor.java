@@ -3,7 +3,6 @@ package org.strivingtoadoniss.palegarden.spread;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
@@ -28,7 +27,7 @@ import net.minecraft.world.chunk.ChunkSection;
 
 public class InfectionCursor {
 
-    public static final int NEUGHBORS_SEARCH_RADIUS = 10;
+    public static final int NEIGHBORS_SEARCH_RADIUS = 5;
     private final ServerWorld world;
     private final BlockPos origin;
 
@@ -45,7 +44,7 @@ public class InfectionCursor {
     public InfectionCursor(ServerWorld world, BlockPos origin) {
         this.world = world;
         this.origin = origin;
-        this.searchQueue.add(origin);
+        addNeighborsToQueue(origin);
     }
 
     public void tick() {
@@ -81,7 +80,7 @@ public class InfectionCursor {
 
         BlockState state = world.getBlockState(pos);
 
-        return state.isSolid()
+        return state.isSolidBlock(world, pos)
             && !state.isOf(ModBlocks.PALE_MUSHROOM)
             && !state.isOf(ModBlocks.PALE_STONE)
             && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
@@ -91,16 +90,12 @@ public class InfectionCursor {
             && !state.isOf(Blocks.PALE_HANGING_MOSS)
             && !state.isOf(Blocks.MOSS_CARPET)
             && !state.isOf(Blocks.HANGING_ROOTS)
-            && !state.isOf(Blocks.AIR)
-            && !state.isOf(Blocks.CAVE_AIR)
-            && !state.isOf(Blocks.VOID_AIR);
+            && !state.isOf(Blocks.BEDROCK)
+            && !state.isAir();
     }
 
     private void infectBlock(BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        BlockState aboveState = world.getBlockState(pos.up());
-
-        if (shouldConvertToGrass(state, aboveState)) {
+        if (shouldConvertToGrass(pos)) {
             convertToGrassBlock(pos);
         } else {
             convertToPaleStone(pos);
@@ -168,8 +163,11 @@ public class InfectionCursor {
         }
     }
 
-    private boolean shouldConvertToGrass(BlockState state, BlockState aboveState) {
-        return !aboveState.isSolid() && state.isSolid();
+    private boolean shouldConvertToGrass(BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        BlockState aboveState = world.getBlockState(pos.up());
+
+        return !aboveState.isSolidBlock(world, pos.up()) && state.isSolidBlock(world, pos);
     }
 
     private void convertToGrassBlock(BlockPos pos) {
@@ -197,7 +195,8 @@ public class InfectionCursor {
     }
 
     private boolean shouldSkipLabyrinthWall(BlockPos pos) {
-        return world.getBlockState(pos.up()).isSolid() && InfectionStarter.isInImpactZone(pos);
+        return world.getBlockState(pos.up()).isSolidBlock(world, pos.up())
+            || InfectionStarter.isInImpactZone(pos);
     }
 
     private void ensureLabyrinthGenerated(BlockPos pos) {
@@ -207,6 +206,7 @@ public class InfectionCursor {
 
     private void buildTreeWall(BlockPos pos) {
         if (!PaleOakTreeGenerator.generateTreeAt(world, pos.up())) {
+            convertToPaleStone(pos);
             buildWallColumn(pos);
         }
     }
@@ -265,15 +265,19 @@ public class InfectionCursor {
         }
     }
 
-   private void addNeighborsToQueue(BlockPos pos) {
-       for (int dx = -NEUGHBORS_SEARCH_RADIUS; dx <= NEUGHBORS_SEARCH_RADIUS; dx++) {
-           for (int dy = -NEUGHBORS_SEARCH_RADIUS; dy <= NEUGHBORS_SEARCH_RADIUS; dy++) {
-               for (int dz = -NEUGHBORS_SEARCH_RADIUS; dz <= NEUGHBORS_SEARCH_RADIUS; dz++) {
-                   tryAddNeighbor(pos, dx, dy, dz);
-               }
-           }
-       }
-   }
+    private void addNeighborsToQueue(BlockPos pos) {
+        for (int dx = -NEIGHBORS_SEARCH_RADIUS; dx <= NEIGHBORS_SEARCH_RADIUS; dx++) {
+            for (int dy = -NEIGHBORS_SEARCH_RADIUS; dy <= NEIGHBORS_SEARCH_RADIUS; dy++) {
+                for (int dz = -NEIGHBORS_SEARCH_RADIUS; dz <= NEIGHBORS_SEARCH_RADIUS; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) {
+                        continue;
+                    }
+
+                    tryAddNeighbor(pos, dx, dy, dz);
+                }
+            }
+        }
+    }
 
    private void tryAddNeighbor(BlockPos pos, int dx, int dy, int dz) {
        if (!isWithinSearchRadius(dx, dy, dz)) {
@@ -289,7 +293,7 @@ public class InfectionCursor {
    }
 
    private boolean isWithinSearchRadius(int dx, int dy, int dz) {
-       return dx * dx + dy * dy + dz * dz <= NEUGHBORS_SEARCH_RADIUS * NEUGHBORS_SEARCH_RADIUS;
+       return dx * dx + dy * dy + dz * dz <= NEIGHBORS_SEARCH_RADIUS * NEIGHBORS_SEARCH_RADIUS;
    }
 
    private boolean shouldAddNeighbor(BlockPos neighbor) {
