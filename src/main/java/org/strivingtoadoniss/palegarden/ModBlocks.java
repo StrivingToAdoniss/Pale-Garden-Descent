@@ -15,7 +15,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import org.strivingtoadoniss.palegarden.blocks.CometCoreBlock;
 import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
 import org.strivingtoadoniss.palegarden.blocks.RegeneratingPaleLogBlock;
 import org.strivingtoadoniss.palegarden.items.PaleMushroomItem;
@@ -27,7 +26,6 @@ public class ModBlocks {
             itemGroup.add(ModBlocks.PALE_STONE.asItem());
             itemGroup.add(ModBlocks.PALE_ROOTED_STONE.asItem());
             itemGroup.add(ModBlocks.PALE_MUSHROOM.asItem());
-            itemGroup.add(ModBlocks.COMET_CORE.asItem());
         });
     }
 
@@ -103,12 +101,4 @@ public class ModBlocks {
         false
     );
 
-    public static final Block COMET_CORE = register(
-        "comet_core",
-        CometCoreBlock::new,
-        AbstractBlock.Settings.copy(Blocks.SCULK)
-            .luminance(state -> 15)
-            .strength(50.0f, 1200.0f),
-        true
-    );
 }

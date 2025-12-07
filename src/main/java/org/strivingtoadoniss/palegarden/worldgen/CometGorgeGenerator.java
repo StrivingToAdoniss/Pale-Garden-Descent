@@ -5,7 +5,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.util.math.random.Random;
-import org.strivingtoadoniss.palegarden.ModBlocks;
+import org.strivingtoadoniss.palegarden.ModEntities;
+import org.strivingtoadoniss.palegarden.entities.CometBossEntity;
 
 public class CometGorgeGenerator {
 
@@ -55,7 +56,8 @@ public class CometGorgeGenerator {
         return noise1 + noise2;
     }
 
-    private static void excavateCraterDepression(ServerWorld world, BlockPos surfacePos, double distance, double combinedNoise, Random random) {
+    private static void excavateCraterDepression(ServerWorld world, BlockPos surfacePos,
+        double distance, double combinedNoise, Random random) {
         double depthFactor = 1.0 - (distance / CRATER_RADIUS);
         int maxDepth = (int) (8 * depthFactor * (1.0 + Math.abs(combinedNoise) * 0.3));
 
@@ -68,7 +70,8 @@ public class CometGorgeGenerator {
         }
     }
 
-    private static void generateCrevice(ServerWorld world, BlockPos top, BlockPos bottom, Random random) {
+    private static void generateCrevice(ServerWorld world, BlockPos top, BlockPos bottom,
+        Random random) {
         int height = top.getY() - bottom.getY();
 
         if (height <= 0) {
@@ -97,7 +100,8 @@ public class CometGorgeGenerator {
         return Math.max(1, (int) (CREVICE_WIDTH * widthMultiplier));
     }
 
-    private static void carveCreviceLayer(ServerWorld world, BlockPos top, int currentY, int currentWidth, PerlinNoiseSampler noiseSampler, Random random) {
+    private static void carveCreviceLayer(ServerWorld world, BlockPos top, int currentY,
+        int currentWidth, PerlinNoiseSampler noiseSampler, Random random) {
         for (int x = -currentWidth; x <= currentWidth; x++) {
             for (int z = -currentWidth; z <= currentWidth; z++) {
                 double noise1 = noiseSampler.sample(x * 0.3, currentY * 0.15, z * 0.3);
@@ -146,7 +150,21 @@ public class CometGorgeGenerator {
     private static void generateChamber(ServerWorld world, BlockPos center, Random random) {
         BlockPos adjustedCenter = adjustChamberPosition(world, center);
         carveChamber(world, adjustedCenter, random);
-        world.setBlockState(adjustedCenter, ModBlocks.COMET_CORE.getDefaultState());
+
+        spawnCometBoss(world, adjustedCenter);
+    }
+
+    private static void spawnCometBoss(ServerWorld world, BlockPos pos) {
+        var bossEntity = new CometBossEntity(ModEntities.COMET_BOSS, world);
+        bossEntity.refreshPositionAndAngles(
+            pos.getX() + 0.5,
+            pos.getY() + 1.0,
+            pos.getZ() + 0.5,
+            0.0F,
+            0.0F
+        );
+        bossEntity.setPersistent();
+        world.spawnEntity(bossEntity);
     }
 
     private static BlockPos adjustChamberPosition(ServerWorld world, BlockPos center) {

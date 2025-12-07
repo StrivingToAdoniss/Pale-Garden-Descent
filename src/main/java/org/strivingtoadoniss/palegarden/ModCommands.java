@@ -109,7 +109,7 @@ public class ModCommands {
     }
 
     private static int executeStopAllInfections(CommandContext<ServerCommandSource> context) {
-        InfectionSystem.getInstance().stopAllInfections();
+        InfectionSystem.getInstance().stopAllInfectionCursors();
 
         return 1;
     }

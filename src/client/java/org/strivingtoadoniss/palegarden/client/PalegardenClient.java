@@ -7,5 +7,6 @@ public class PalegardenClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ModModelLoader.register();
+        ModEntityRenderers.initialize();
     }
 }
