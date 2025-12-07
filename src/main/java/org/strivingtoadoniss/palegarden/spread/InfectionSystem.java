@@ -9,7 +9,7 @@ public class InfectionSystem {
 
     private static InfectionSystem instance;
 
-    private final List<InfectionCursor> cursors = new ArrayList<>();
+    private final List<InfectionCursor> infectionCursors = new ArrayList<>();
 
     private InfectionSystem() {}
 
@@ -24,17 +24,37 @@ public class InfectionSystem {
         ServerTickEvents.END_SERVER_TICK.register(server -> getInstance().tick());
     }
 
-    public void addCursor(InfectionCursor cursor) {
-        cursors.add(cursor);
+    public void addInfectionCursor(InfectionCursor cursor) {
+        infectionCursors.add(cursor);
+    }
+
+    public void activateAllCleansingCursors() {
+        for (InfectionCursor infectionCursor : infectionCursors) {
+            infectionCursor.getPairedCleansingCursor().activate();
+        }
     }
 
     private void tick() {
-        cursors.removeIf(InfectionCursor::isFinished);
-        cursors.forEach(InfectionCursor::tick);
+        infectionCursors.removeIf(cursor -> cursor.isFinished() && cursor.getPairedCleansingCursor().isFinished());
+        infectionCursors.forEach(InfectionCursor::tick);
+
+        for (InfectionCursor infectionCursor : infectionCursors) {
+            CleansingCursor cleansingCursor = infectionCursor.getPairedCleansingCursor();
+            if (cleansingCursor.isActive()) {
+                cleansingCursor.tick();
+            }
+        }
     }
 
-    public void stopAllInfections() {
-        cursors.forEach(InfectionCursor::finishImmediately);
-        cursors.clear();
+    public void stopAllInfectionCursors() {
+        for (InfectionCursor cursor : infectionCursors) {
+            cursor.finishImmediately();
+        }
+    }
+
+    public void stopAllCleansingCursors() {
+        for (InfectionCursor cursor : infectionCursors) {
+            cursor.getPairedCleansingCursor().finishImmediately();
+        }
     }
 }

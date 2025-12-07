@@ -18,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
+import org.strivingtoadoniss.palegarden.spread.InfectionSystem;
 
 public class CometBossEntity extends HostileEntity {
 
@@ -83,6 +84,11 @@ public class CometBossEntity extends HostileEntity {
     @Override
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
+
+        if (!this.getWorld().isClient) {
+            InfectionSystem.getInstance().stopAllInfectionCursors();
+            InfectionSystem.getInstance().activateAllCleansingCursors();
+        }
     }
 
     @Override

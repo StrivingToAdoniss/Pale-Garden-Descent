@@ -1,97 +1,79 @@
 package org.strivingtoadoniss.palegarden.spread;
 
+import java.util.Set;
 import lombok.Getter;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-
-import java.util.*;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.PalettedContainer;
 import org.strivingtoadoniss.palegarden.ModBlocks;
 import org.strivingtoadoniss.palegarden.blocks.PaleMushroomBlock;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 import org.strivingtoadoniss.palegarden.worldgen.ModBiomes;
 import org.strivingtoadoniss.palegarden.worldgen.PaleOakTreeGenerator;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.chunk.PalettedContainer;
-import net.minecraft.world.chunk.ChunkSection;
 
-public class InfectionCursor {
+import java.util.Optional;
 
-    public static final int NEIGHBORS_SEARCH_RADIUS = 5;
-    private final ServerWorld world;
-    private final BlockPos origin;
-
-    private int currentTransformations = 0;
-    private int tickCounter = 0;
-
-    private final Queue<BlockPos> searchQueue = new LinkedList<>();
-    private final Set<BlockPos> visited = new HashSet<>();
-    private final Set<WorldChunk> modifiedChunks = new HashSet<>();
+public class InfectionCursor extends SpreadCursor {
 
     @Getter
-    private boolean finished = false;
+    private final CleansingCursor pairedCleansingCursor;
+
+    public static final Set<Block> EXCLUDED_BLOCKS = Set.of(
+        ModBlocks.PALE_MUSHROOM,
+        ModBlocks.PALE_STONE,
+        ModBlocks.PALE_ROOTED_STONE,
+        Blocks.PALE_OAK_LOG,
+        Blocks.PALE_OAK_LEAVES,
+        Blocks.PALE_HANGING_MOSS,
+        Blocks.MOSS_CARPET,
+        Blocks.HANGING_ROOTS,
+        Blocks.BEDROCK
+    );
 
     public InfectionCursor(ServerWorld world, BlockPos origin) {
-        this.world = world;
-        this.origin = origin;
-        addNeighborsToQueue(origin);
+        super(world, origin);
+        this.pairedCleansingCursor = new CleansingCursor(world, origin);
+        activate();
     }
 
-    public void tick() {
-        tickCounter++;
-        if (tickCounter < InfectionConfig.TICK_DELAY) {
-            return;
-        }
-        tickCounter = 0;
-
-        for (int i = 0; i < InfectionConfig.BLOCKS_PER_TICK; i++) {
-            BlockPos pos = searchQueue.poll();
-
-            infectBlock(pos);
-            placeLabyrinthWall(pos);
-            spawnInfectionParticles(pos);
-            trySpawnMushroom(pos);
-            addNeighborsToQueue(pos);
-
-            if (++currentTransformations >= InfectionConfig.MAX_TRANSFORMATIONS
-                    || searchQueue.isEmpty()) {
-                finished = true;
-                return;
-            }
-        }
-        
-        sendChunkUpdates();
+    @Override
+    protected void processBlock(BlockPos pos) {
+        infectBlock(pos);
+        placeLabyrinthWall(pos);
+        trySpawnMushroom(pos);
     }
 
-    private boolean canInfect(BlockPos pos) {
+    @Override
+    protected void spawnParticles(BlockPos pos) {
+        world.spawnParticles(ParticleTypes.SCULK_CHARGE_POP,
+            pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+            5, 0.2, 0.2, 0.2, 0.01
+        );
+    }
+
+    @Override
+    protected boolean canProcess(BlockPos pos) {
         if (pos.getManhattanDistance(origin) > InfectionConfig.MAX_INFECTION_RADIUS) {
             return false;
         }
 
         BlockState state = world.getBlockState(pos);
 
-        return state.isSolidBlock(world, pos)
-            && !state.isOf(ModBlocks.PALE_MUSHROOM)
-            && !state.isOf(ModBlocks.PALE_STONE)
-            && !state.isOf(ModBlocks.PALE_ROOTED_STONE)
-            && !state.isOf(ModBlocks.COMET_CORE)
-            && !state.isOf(Blocks.PALE_OAK_LOG)
-            && !state.isOf(Blocks.PALE_OAK_LEAVES)
-            && !state.isOf(Blocks.PALE_HANGING_MOSS)
-            && !state.isOf(Blocks.MOSS_CARPET)
-            && !state.isOf(Blocks.HANGING_ROOTS)
-            && !state.isOf(Blocks.BEDROCK)
-            && !state.isAir();
+        return !state.isAir()
+            && state.isSolidBlock(world, pos)
+            && !EXCLUDED_BLOCKS.contains(state.getBlock());
     }
 
     private void infectBlock(BlockPos pos) {
@@ -112,6 +94,8 @@ public class InfectionCursor {
         int quartZ = (pos.getZ() & 15) >> 2;
         Chunk chunk = world.getChunk(pos);
 
+        backupOriginalBiomes(chunk, quartX, quartZ, pos);
+
         boolean changed = replaceBiomeInColumn(chunk, quartX, quartZ, biomeEntry.get());
 
         if (changed) {
@@ -119,48 +103,54 @@ public class InfectionCursor {
         }
     }
 
-    private boolean replaceBiomeInColumn(Chunk chunk, int quartX, int quartZ, RegistryEntry<Biome> newBiome) {
-        boolean anyChanged = false;
+    private void backupOriginalBiomes(Chunk chunk, int quartX, int quartZ, BlockPos pos) {
+        ChunkSection[] sections = chunk.getSectionArray();
+        int bottomSectionY = chunk.getBottomSectionCoord();
 
-        for (ChunkSection section : chunk.getSectionArray()) {
-            if (replaceBiomeInSection(section, quartX, quartZ, newBiome)) {
-                anyChanged = true;
-            }
+        for (int sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
+            backupBiomesInSection(sections[sectionIndex], sectionIndex, bottomSectionY, quartX,
+                quartZ, pos);
         }
-
-        return anyChanged;
     }
 
-    private boolean replaceBiomeInSection(ChunkSection section, int quartX, int quartZ, RegistryEntry<Biome> newBiome) {
+    private void backupBiomesInSection(ChunkSection section, int sectionIndex, int bottomSectionY,
+        int quartX, int quartZ, BlockPos pos) {
         var container = (PalettedContainer<RegistryEntry<Biome>>) section.getBiomeContainer();
-        boolean changed = false;
-
         container.lock();
         try {
-            for (int quartY = 0; quartY < 4; quartY++) {
-                if (!container.get(quartX, quartY, quartZ).equals(newBiome)) {
-                    container.swapUnsafe(quartX, quartY, quartZ, newBiome);
-                    changed = true;
-                }
-            }
+            backupBiomesInQuarters(container, sectionIndex, bottomSectionY, quartX, quartZ, pos);
         } finally {
             container.unlock();
         }
+    }
 
-        return changed;
+    private void backupBiomesInQuarters(PalettedContainer<RegistryEntry<Biome>> container,
+        int sectionIndex, int bottomSectionY, int quartX, int quartZ, BlockPos pos) {
+        for (int quartY = 0; quartY < 4; quartY++) {
+            var currentBiome = container.get(quartX, quartY, quartZ);
+            if (shouldBackupBiome(currentBiome)) {
+                int yPos = calculateYPosition(bottomSectionY, sectionIndex, quartY);
+                biomeBackup.saveOriginalBiome(
+                    new BlockPos(pos.getX(), yPos, pos.getZ()),
+                    currentBiome.getKey().orElseThrow()
+                );
+            }
+        }
+    }
+
+    private boolean shouldBackupBiome(RegistryEntry<Biome> biome) {
+        return biome.getKey().isPresent() &&
+            !biome.getKey().orElseThrow().equals(ModBiomes.INFECTED_PALE_GARDEN);
+    }
+
+    private int calculateYPosition(int bottomSectionY, int sectionIndex, int quartY) {
+        return (bottomSectionY + sectionIndex) * 16 + (quartY * 4);
     }
 
     private Optional<RegistryEntry.Reference<Biome>> getInfectedBiomeEntry() {
         return world.getRegistryManager()
             .getOrThrow(RegistryKeys.BIOME)
             .getOptional(ModBiomes.INFECTED_PALE_GARDEN);
-    }
-
-    private void markChunkAsModified(Chunk chunk) {
-        if (chunk instanceof WorldChunk worldChunk) {
-            modifiedChunks.add(worldChunk);
-            worldChunk.markNeedsSaving();
-        }
     }
 
     private boolean shouldConvertToGrass(BlockPos pos) {
@@ -218,12 +208,6 @@ public class InfectionCursor {
         }
     }
 
-    private void spawnInfectionParticles(BlockPos pos) {
-        world.spawnParticles(ParticleTypes.SCULK_CHARGE_POP,
-            pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
-            5, 0.2, 0.2, 0.2, 0.01);
-    }
-
     private void trySpawnMushroom(BlockPos pos) {
         BlockPos mushroomPos = pos.up();
 
@@ -263,62 +247,5 @@ public class InfectionCursor {
         } else {
             return 5;
         }
-    }
-
-    private void addNeighborsToQueue(BlockPos pos) {
-        for (int dx = -NEIGHBORS_SEARCH_RADIUS; dx <= NEIGHBORS_SEARCH_RADIUS; dx++) {
-            for (int dy = -NEIGHBORS_SEARCH_RADIUS; dy <= NEIGHBORS_SEARCH_RADIUS; dy++) {
-                for (int dz = -NEIGHBORS_SEARCH_RADIUS; dz <= NEIGHBORS_SEARCH_RADIUS; dz++) {
-                    if (dx == 0 && dy == 0 && dz == 0) {
-                        continue;
-                    }
-
-                    tryAddNeighbor(pos, dx, dy, dz);
-                }
-            }
-        }
-    }
-
-   private void tryAddNeighbor(BlockPos pos, int dx, int dy, int dz) {
-       if (!isWithinSearchRadius(dx, dy, dz)) {
-           return;
-       }
-
-       BlockPos neighbor = pos.add(dx, dy, dz);
-
-       if (shouldAddNeighbor(neighbor)) {
-           searchQueue.add(neighbor);
-           visited.add(neighbor);
-       }
-   }
-
-   private boolean isWithinSearchRadius(int dx, int dy, int dz) {
-       return dx * dx + dy * dy + dz * dz <= NEIGHBORS_SEARCH_RADIUS * NEIGHBORS_SEARCH_RADIUS;
-   }
-
-   private boolean shouldAddNeighbor(BlockPos neighbor) {
-       return !visited.contains(neighbor)
-           && world.isInBuildLimit(neighbor)
-           && canInfect(neighbor);
-   }
-
-    private void sendChunkUpdates() {
-        if (modifiedChunks.isEmpty()) {
-            return;
-        }
-
-        List<ChunkBiomeDataS2CPacket.Serialized> serializedChunks = new ArrayList<>();
-        for (WorldChunk chunk : modifiedChunks) {
-            serializedChunks.add(new ChunkBiomeDataS2CPacket.Serialized(chunk));
-        }
-
-        ChunkBiomeDataS2CPacket packet = new ChunkBiomeDataS2CPacket(serializedChunks);
-        world.getPlayers().forEach(player -> player.networkHandler.sendPacket(packet));
-
-        modifiedChunks.clear();
-    }
-
-    public void finishImmediately() {
-        finished = true;
     }
 }

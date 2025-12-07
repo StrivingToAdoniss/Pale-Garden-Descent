@@ -29,8 +29,8 @@ public class InfectionStarter {
             InfectionCursor coreCursor = new InfectionCursor(serverWorld, corePos.down());
             InfectionCursor surfaceCursor = new InfectionCursor(serverWorld, surfacePos);
             LabyrinthGenerator.setWorld(serverWorld);
-            InfectionSystem.getInstance().addCursor(coreCursor);
-            InfectionSystem.getInstance().addCursor(surfaceCursor);
+            InfectionSystem.getInstance().addInfectionCursor(coreCursor);
+            InfectionSystem.getInstance().addInfectionCursor(surfaceCursor);
         }
     }
 
@@ -53,11 +53,16 @@ public class InfectionStarter {
         for (int i = 0; i < 385; i++) {
             pos.move(0, -1, 0);
 
-            if (world.getBlockState(pos).isSolid() && !world.getBlockState(pos.up()).isSolid()) {
+            if (isSurfaceBlock(world, pos)) {
                 return pos;
             }
         }
 
         return null;
+    }
+
+    private static boolean isSurfaceBlock(ServerWorld world, BlockPos pos) {
+        return world.getBlockState(pos).isSolidBlock(world, pos) &&
+               !world.getBlockState(pos.up()).isSolidBlock(world, pos.up());
     }
 }
