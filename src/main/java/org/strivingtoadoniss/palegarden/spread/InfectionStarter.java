@@ -13,6 +13,7 @@ public class InfectionStarter {
 
     @Getter
     private static BlockPos cometImpactSite = null;
+    @Getter
     private static final int IMPACT_EXCLUSION_RADIUS = 6;
 
     private InfectionStarter() {}
@@ -28,11 +29,12 @@ public class InfectionStarter {
             cometImpactSite = surfacePos;
 
             BlockPos chamberCenter = CometGorgeGenerator.generateGorge(serverWorld, surfacePos,
-                    serverWorld.getRandom());
+                serverWorld.getRandom());
             LabyrinthCanopyBuilder.buildImpactCanopy(serverWorld, surfacePos, IMPACT_EXCLUSION_RADIUS);
 
             InfectionCursor chamberCursor = new InfectionCursor(serverWorld, chamberCenter, true);
             InfectionCursor surfaceCursor = new InfectionCursor(serverWorld, surfacePos);
+            LabyrinthGenerator.setOrigin(surfacePos);
             LabyrinthGenerator.setWorld(serverWorld);
             InfectionSystem.getInstance().addInfectionCursor(chamberCursor);
             InfectionSystem.getInstance().addInfectionCursor(surfaceCursor);

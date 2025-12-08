@@ -1,5 +1,7 @@
 package org.strivingtoadoniss.palegarden.util;
 
+import static org.strivingtoadoniss.palegarden.spread.InfectionStarter.isInImpactZone;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -11,16 +13,11 @@ import java.util.*;
 
 public class LabyrinthPathfinder {
 
+    private LabyrinthPathfinder() {}
+
     public static List<BlockPos> findPath(ServerWorld world, BlockPos start, BlockPos end) {
         BlockPos target = new BlockPos(end.getX(), start.getY(), end.getZ());
 
-        PathfindingContext context = initializePathfinding(start, target);
-        Node result = executePathfinding(context, target);
-
-        return result != null ? reconstructPath(result, world) : Collections.emptyList();
-    }
-
-    private static PathfindingContext initializePathfinding(BlockPos start, BlockPos target) {
         PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(n -> n.fCost));
         Map<BlockPos, Node> allNodes = new HashMap<>();
         Set<BlockPos> closedSet = new HashSet<>();
@@ -29,64 +26,58 @@ public class LabyrinthPathfinder {
         openSet.add(startNode);
         allNodes.put(start, startNode);
 
-        return new PathfindingContext(openSet, allNodes, closedSet);
-    }
-
-    private static Node executePathfinding(PathfindingContext context, BlockPos target) {
         int maxIterations = 200000;
         int iterations = 0;
 
-        while (!context.openSet.isEmpty() && iterations < maxIterations) {
+        while (!openSet.isEmpty() && iterations < maxIterations) {
             iterations++;
-            Node current = context.openSet.poll();
+            Node current = openSet.poll();
 
-            if (context.closedSet.contains(current.pos)) {
+            if (closedSet.contains(current.pos)) {
                 continue;
             }
-            context.closedSet.add(current.pos);
+            closedSet.add(current.pos);
 
-            if (current.pos.equals(target)) {
-                return current;
+            if (isInImpactZone(current.pos)) {
+                return reconstructPath(current, world);
             }
 
-            processNeighbors(current, target, context.allNodes, context.openSet, context.closedSet);
+            processNeighbors(current, target, openSet, allNodes, closedSet);
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
-    private static void processNeighbors(Node current, BlockPos target,
-        Map<BlockPos, Node> allNodes, PriorityQueue<Node> openSet, Set<BlockPos> closedSet) {
+    private static void processNeighbors(Node current, BlockPos target, PriorityQueue<Node> openSet,
+                                          Map<BlockPos, Node> allNodes, Set<BlockPos> closedSet) {
         for (BlockPos neighborPos : getNeighbors(current.pos)) {
-            if (shouldSkipNeighbor(neighborPos, closedSet)) {
+            if (!isInImpactZone(neighborPos) && shouldSkipNeighbor(neighborPos, closedSet)) {
                 continue;
             }
 
-            double gCost = current.gCost + 1;
-            Node neighbor = allNodes.getOrDefault(neighborPos,
-                new Node(neighborPos, null, Double.MAX_VALUE, 0));
-
-            if (gCost < neighbor.gCost) {
-                updateNeighborNode(neighbor, current, gCost, target, neighborPos, allNodes,
-                    openSet);
-            }
+            updateNeighborNode(current, neighborPos, target, openSet, allNodes);
         }
     }
 
     private static boolean shouldSkipNeighbor(BlockPos neighborPos, Set<BlockPos> closedSet) {
-        return LabyrinthGenerator.shouldPlaceWallAt(neighborPos) || closedSet.contains(neighborPos);
+        return LabyrinthGenerator.isWallGenerated(neighborPos) || closedSet.contains(neighborPos);
     }
 
-    private static void updateNeighborNode(Node neighbor, Node current, double gCost,
-        BlockPos target, BlockPos neighborPos, Map<BlockPos, Node> allNodes,
-        PriorityQueue<Node> openSet) {
-        neighbor.parent = current;
-        neighbor.gCost = gCost;
-        neighbor.hCost = neighborPos.getManhattanDistance(target);
-        neighbor.fCost = neighbor.gCost + neighbor.hCost;
+    private static void updateNeighborNode(Node current, BlockPos neighborPos, BlockPos target,
+        PriorityQueue<Node> openSet, Map<BlockPos, Node> allNodes) {
+        double gCost = current.gCost + 1;
+        Node neighbor = allNodes.getOrDefault(neighborPos,
+            new Node(neighborPos, null, Double.MAX_VALUE, 0));
 
-        allNodes.putIfAbsent(neighborPos, neighbor);
-        openSet.add(neighbor);
+        if (gCost < neighbor.gCost) {
+            neighbor.parent = current;
+            neighbor.gCost = gCost;
+            neighbor.hCost = neighborPos.getManhattanDistance(target);
+            neighbor.fCost = neighbor.gCost + neighbor.hCost;
+
+            allNodes.putIfAbsent(neighborPos, neighbor);
+            openSet.add(neighbor);
+        }
     }
 
     private static List<BlockPos> getNeighbors(BlockPos pos) {
@@ -134,9 +125,6 @@ public class LabyrinthPathfinder {
 
         return state.getCollisionShape(world, pos).isEmpty();
     }
-
-    private record PathfindingContext(PriorityQueue<Node> openSet, Map<BlockPos, Node> allNodes,
-                                      Set<BlockPos> closedSet) {}
 
     private static class Node {
         BlockPos pos;

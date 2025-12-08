@@ -4,6 +4,7 @@ import lombok.Setter;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.*;
 
@@ -14,10 +15,14 @@ public class LabyrinthGenerator {
     private static final int CELL_SIZE = 4;
     private static final int GRID_SIZE = 4;
     private static final int WALL_HEIGHT = 6;
+
     @Setter
     private static ServerWorld world;
+    @Setter
+    private static BlockPos origin;
 
     private static final Map<ChunkPos, boolean[][][]> generatedChunks = new HashMap<>();
+    private static final List<BlockPos> generatedWalls = new ArrayList<>();
 
     public static void generateLabyrinthChunk(ChunkPos chunkPos) {
         boolean[][][] grid = generateMazeGridForChunk(chunkPos);
@@ -77,23 +82,38 @@ public class LabyrinthGenerator {
         Random globalRandom = new Random(world.getSeed() ^ ((chunkPos.x - 1) * 341873128712L
             + (chunkPos.z - 1) * 132897987541L));
 
-        performRecursiveBacktracking(expandedGrid, visited, globalRandom, expandedSize);
+        performRecursiveBacktracking(expandedGrid, visited, globalRandom, expandedSize, chunkPos);
 
         return extractChunkGrid(expandedGrid);
     }
 
-    private static void performRecursiveBacktracking(boolean[][][] grid, boolean[][] visited, Random random, int gridSize) {
+    private static void performRecursiveBacktracking(boolean[][][] grid, boolean[][] visited,
+        Random random, int gridSize, ChunkPos currentChunkPos) {
         Deque<int[]> stack = new ArrayDeque<>();
-        initializeBacktracking(stack, visited, random, gridSize);
+
+        initializeBacktracking(stack, visited, gridSize, currentChunkPos);
 
         while (!stack.isEmpty()) {
             processCurrentCell(stack, grid, visited, random, gridSize);
         }
     }
 
-    private static void initializeBacktracking(Deque<int[]> stack, boolean[][] visited, Random random, int gridSize) {
-        int startX = random.nextInt(gridSize);
-        int startZ = random.nextInt(gridSize);
+    private static void initializeBacktracking(Deque<int[]> stack, boolean[][] visited, int gridSize, ChunkPos currentChunkPos) {
+        int startX, startZ;
+
+        if (origin != null) {
+            int gridWorldStartX = (currentChunkPos.x - 1) * 16;
+            int gridWorldStartZ = (currentChunkPos.z - 1) * 16;
+
+            int targetCellX = (origin.getX() - gridWorldStartX) / CELL_SIZE;
+            int targetCellZ = (origin.getZ() - gridWorldStartZ) / CELL_SIZE;
+
+            startX = MathHelper.clamp(targetCellX, 0, gridSize - 1);
+            startZ = MathHelper.clamp(targetCellZ, 0, gridSize - 1);
+        } else {
+            startX = gridSize / 2;
+            startZ = gridSize / 2;
+        }
 
         stack.push(new int[]{startX, startZ});
         visited[startX][startZ] = true;
@@ -199,5 +219,13 @@ public class LabyrinthGenerator {
 
     public static boolean isChunkInfected(ChunkPos chunkPos) {
         return generatedChunks.containsKey(chunkPos);
+    }
+
+    public static void addWallToGeneratedList(BlockPos pos) {
+        generatedWalls.add(new BlockPos(pos.getX(), 0, pos.getZ()));
+    }
+
+    public static boolean isWallGenerated(BlockPos pos) {
+        return generatedWalls.contains(new BlockPos(pos.getX(), 0, pos.getZ()));
     }
 }
