@@ -22,7 +22,7 @@ public class RegeneratingPaleLogBlock extends PillarBlock {
     @Override
     protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!world.isClient) {
-            int delay = 600 + world.random.nextInt(601);
+            int delay = 300 + world.random.nextInt(201);
             world.scheduleBlockTick(pos, this, delay);
         }
         super.onBlockAdded(state, world, pos, oldState, notify);
