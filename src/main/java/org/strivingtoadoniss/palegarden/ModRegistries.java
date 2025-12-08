@@ -2,11 +2,23 @@ package org.strivingtoadoniss.palegarden;
 
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.Blocks;
+import org.strivingtoadoniss.palegarden.mixin.AbstractBlockAccessor;
 
 public class ModRegistries {
 
+    private ModRegistries() {}
+
     public static void register() {
         registerFlammableBlocks();
+        registerResistibleBlocks();
+    }
+
+    private static void registerResistibleBlocks() {
+        AbstractBlockAccessor paleLog = (AbstractBlockAccessor) Blocks.PALE_OAK_LOG;
+        AbstractBlockAccessor paleLeaves = (AbstractBlockAccessor) Blocks.PALE_OAK_LEAVES;
+
+        paleLog.setResistance(3600000.0f);
+        paleLeaves.setResistance(3600000.0f);
     }
 
     private static void registerFlammableBlocks() {

@@ -4,14 +4,15 @@
   "package": "org.strivingtoadoniss.palegarden.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "MixinScreenHandler",
+    "AbstractBlockAccessor",
+    "MixinAbstractBlock",
     "MixinLivingEntity",
     "MixinPlayerEntity",
-    "MixinPlayerScreenHandler",
-    "MixinPlayerEntityHunger",
     "MixinPlayerEntityFood",
-    "SlotAccessor",
-    "MixinAbstractBlock"
+    "MixinPlayerEntityHunger",
+    "MixinPlayerScreenHandler",
+    "MixinScreenHandler",
+    "SlotAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
