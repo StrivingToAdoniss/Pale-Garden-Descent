@@ -22,5 +22,7 @@
   "advancement.palegarden.obtained_giant_ribcage.description": "Ваші ребра виросли, щоб краще служити вам.",
   "advancement.palegarden.obtained_golden_metabolism.title": "Золотий метаболізм",
   "advancement.palegarden.obtained_golden_metabolism.description": "Бро, ти тепер гриб.",
-  "entity.palegarden.comet_boss": "Бос комети"
+  "entity.palegarden.comet_boss": "Бос комети",
+  "entity.palegarden.splitter_skeleton": "Скелет-розщеплювач",
+  "item.palegarden.splitter_skeleton_spawn_egg": "Яйце призову скелета-розщеплювача"
 }

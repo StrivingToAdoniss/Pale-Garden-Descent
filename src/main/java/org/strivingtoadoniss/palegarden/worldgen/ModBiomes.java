@@ -12,10 +12,12 @@ import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.SpawnSettings;
 import org.strivingtoadoniss.palegarden.Palegarden;
+import org.strivingtoadoniss.palegarden.ModEntities;
 
 public class ModBiomes {
+
     public static final RegistryKey<Biome> INFECTED_PALE_GARDEN = RegistryKey.of(RegistryKeys.BIOME,
-            Identifier.of(Palegarden.MOD_ID, "infected_pale_garden"));
+        Identifier.of(Palegarden.MOD_ID, "infected_pale_garden"));
 
     public static void bootstrap(Registerable<Biome> context) {
         context.register(INFECTED_PALE_GARDEN, createSilentPaleGarden());
@@ -35,7 +37,10 @@ public class ModBiomes {
                 .moodSound(BiomeMoodSound.CAVE)
                 .build())
             .spawnSettings(new SpawnSettings.Builder()
-                .spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.CREAKING, 10, 1, 4))
+                .spawn(SpawnGroup.MONSTER,
+                    new SpawnSettings.SpawnEntry(EntityType.CREAKING, 100, 1, 3))
+                .spawn(SpawnGroup.MONSTER,
+                    new SpawnSettings.SpawnEntry(ModEntities.SPLITTER_SKELETON, 100, 4, 4))
                 .build())
             .generationSettings(new GenerationSettings.Builder().build())
             .build();

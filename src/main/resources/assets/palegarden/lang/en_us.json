@@ -22,5 +22,7 @@
   "advancement.palegarden.obtained_giant_ribcage.description": "Your ribs have grown to serve you better.",
   "advancement.palegarden.obtained_golden_metabolism.title": "Golden Metabolism",
   "advancement.palegarden.obtained_golden_metabolism.description": "Bro, you are a mushroom now.",
-  "entity.palegarden.comet_boss": "Comet Boss"
+  "entity.palegarden.comet_boss": "Comet Boss",
+  "entity.palegarden.splitter_skeleton": "Splitter Skeleton",
+  "item.palegarden.splitter_skeleton_spawn_egg": "Splitter Skeleton Spawn Egg"
 }
