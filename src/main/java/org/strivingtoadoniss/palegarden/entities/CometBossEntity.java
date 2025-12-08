@@ -1,5 +1,6 @@
 package org.strivingtoadoniss.palegarden.entities;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -117,5 +118,20 @@ public class CometBossEntity extends HostileEntity {
     @Override
     public boolean isPersistent() {
         return true;
+    }
+
+    @Override
+    public boolean isPushedByFluids() {
+        return false;
+    }
+
+    @Override
+    public boolean isPushable() {
+        return false;
+    }
+
+    @Override
+    public void pushAwayFrom(Entity entity) {
+
     }
 }
