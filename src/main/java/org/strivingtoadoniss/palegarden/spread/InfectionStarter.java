@@ -33,7 +33,7 @@ public class InfectionStarter {
             LabyrinthCanopyBuilder.buildImpactCanopy(serverWorld, surfacePos, IMPACT_EXCLUSION_RADIUS);
 
             InfectionCursor chamberCursor = new InfectionCursor(serverWorld, chamberCenter, true);
-            InfectionCursor surfaceCursor = new InfectionCursor(serverWorld, surfacePos);
+            InfectionCursor surfaceCursor = new InfectionCursor(serverWorld, surfacePos.down(10));
             LabyrinthGenerator.setOrigin(surfacePos);
             LabyrinthGenerator.setWorld(serverWorld);
             InfectionSystem.getInstance().addInfectionCursor(chamberCursor);

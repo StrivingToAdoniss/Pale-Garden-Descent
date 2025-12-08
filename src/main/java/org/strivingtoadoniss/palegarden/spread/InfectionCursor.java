@@ -207,11 +207,14 @@ public class InfectionCursor extends SpreadCursor {
     }
 
     private void buildTreeWall(BlockPos pos) {
-        LabyrinthGenerator.addWallToGeneratedList(pos);
+        Set<BlockPos> trunks = PaleOakTreeGenerator.generateTreeAtAndGetTrunks(world, pos.up());
 
-        if (!PaleOakTreeGenerator.generateTreeAt(world, pos.up())) {
+        if (trunks.isEmpty()) {
+            LabyrinthGenerator.addWallToGeneratedList(pos);
             convertToPaleStone(pos);
             buildWallColumn(pos);
+        } else {
+            trunks.forEach(LabyrinthGenerator::addWallToGeneratedList);
         }
     }
 

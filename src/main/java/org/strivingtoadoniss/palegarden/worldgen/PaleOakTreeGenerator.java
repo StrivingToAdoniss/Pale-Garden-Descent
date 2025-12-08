@@ -1,5 +1,6 @@
 package org.strivingtoadoniss.palegarden.worldgen;
 
+import net.minecraft.block.Blocks;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -58,6 +59,42 @@ public class PaleOakTreeGenerator {
 
     private static void trackGeneratedTree(ChunkPos chunkPos, BlockPos pos) {
         generatedTrees.computeIfAbsent(chunkPos, k -> new HashSet<>()).add(pos);
+    }
+
+    public static Set<BlockPos> generateTreeAtAndGetTrunks(ServerWorld world, BlockPos pos) {
+        Set<BlockPos> trunkPositions = new HashSet<>();
+
+        if (!generateTreeAt(world, pos)) {
+            return trunkPositions;
+        }
+
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                BlockPos checkPos = pos.add(x, 0, z);
+                if (isTrunkCenter(world, checkPos)) {
+                    trunkPositions.add(checkPos);
+                    trunkPositions.add(checkPos.add(1, 0, 0));
+                    trunkPositions.add(checkPos.add(0, 0, 1));
+                    trunkPositions.add(checkPos.add(1, 0, 1));
+                }
+            }
+        }
+
+        return trunkPositions;
+    }
+
+    private static boolean isTrunkCenter(ServerWorld world, BlockPos pos) {
+        for (int y = -1; y <= 1; y++) {
+            BlockPos checkPos = pos.up(y);
+            if (world.getBlockState(checkPos).isOf(Blocks.PALE_OAK_LOG) && world.getBlockState(
+                checkPos.add(1, 0, 0)).isOf(Blocks.PALE_OAK_LOG) && world.getBlockState(
+                checkPos.add(0, 0, 1)).isOf(Blocks.PALE_OAK_LOG) && world.getBlockState(
+                checkPos.add(1, 0, 1)).isOf(Blocks.PALE_OAK_LOG)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
