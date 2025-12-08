@@ -11,6 +11,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +32,8 @@ import net.minecraft.util.math.BlockPos;
 import org.strivingtoadoniss.palegarden.config.InfectionConfig;
 import org.strivingtoadoniss.palegarden.spread.InfectionStarter;
 import org.strivingtoadoniss.palegarden.spread.InfectionSystem;
+import org.strivingtoadoniss.palegarden.util.PathHighlighter;
+import org.strivingtoadoniss.palegarden.util.LabyrinthPathfinder;
 import org.strivingtoadoniss.palegarden.worldgen.CometGorgeGenerator;
 
 public class ModCommands {
@@ -45,27 +48,29 @@ public class ModCommands {
             registerStopAllInfections(dispatcher);
             registerEffectClearCommand(dispatcher);
             registerGenerateGorge(dispatcher);
+            registerPathToCenterCommand(dispatcher);
         });
     }
 
     private static final SuggestionProvider<ServerCommandSource> EFFECT_SUGGESTIONS = (context,
-            builder) -> CommandSource
-                    .suggestMatching(new String[] { "third_hand", "giant_ribcage", "golden_metabolism" }, builder);
+        builder) -> CommandSource
+        .suggestMatching(new String[]{"third_hand", "giant_ribcage", "golden_metabolism"}, builder);
 
-    private static void registerEffectClearCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private static void registerEffectClearCommand(
+        CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("effect_clear")
-                .requires(source -> source.hasPermissionLevel(2))
-                .then(argument("effect_name", word())
-                        .suggests(EFFECT_SUGGESTIONS)
-                        .executes(ModCommands::executeEffectClear)));
+            .requires(source -> source.hasPermissionLevel(2))
+            .then(argument("effect_name", word())
+                .suggests(EFFECT_SUGGESTIONS)
+                .executes(ModCommands::executeEffectClear)));
     }
 
-    private static void registerStartSpreadCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private static void registerStartSpreadCommand(
+        CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("start_spread")
             .requires(source -> source.hasPermissionLevel(2))
             .then(argument("radius", integer(5))
-                .executes(ModCommands::executeStartSpread))
-        );
+                .executes(ModCommands::executeStartSpread)));
     }
 
     private static void registerSetSpeedCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -84,7 +89,8 @@ public class ModCommands {
         );
     }
 
-    private static void registerSetMaxTransformations(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private static void registerSetMaxTransformations(
+        CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("set_max_transformations")
             .requires(source -> source.hasPermissionLevel(2))
             .then(argument("transforms", integer(1))
@@ -92,7 +98,8 @@ public class ModCommands {
         );
     }
 
-    private static void registerSetMaxInfectionRadius(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private static void registerSetMaxInfectionRadius(
+        CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("set_max_infection_radius")
             .requires(source -> source.hasPermissionLevel(2))
             .then(argument("radius", integer(1))
@@ -100,7 +107,8 @@ public class ModCommands {
         );
     }
 
-    private static void registerStopAllInfections(CommandDispatcher<ServerCommandSource> dispatcher) {
+    private static void registerStopAllInfections(
+        CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("stop_all_infections")
             .requires(source -> source.hasPermissionLevel(2))
             .executes(ModCommands::executeStopAllInfections)
@@ -250,7 +258,6 @@ public class ModCommands {
         }
     }
 
-
     private static void registerGenerateGorge(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("palegarden")
             .then(literal("generate_gorge")
@@ -278,6 +285,43 @@ public class ModCommands {
             return 1;
         } catch (Exception e) {
             source.sendError(Text.literal("§cError: " + e.getMessage()));
+            return 0;
+        }
+    }
+
+    private static void registerPathToCenterCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(literal("path_to_center")
+                .requires(source -> source.hasPermissionLevel(2))
+                .executes(ModCommands::executePathToCenter));
+    }
+
+    private static int executePathToCenter(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        try {
+            ServerPlayerEntity player = source.getPlayerOrThrow();
+            BlockPos start = player.getBlockPos();
+            BlockPos end = InfectionStarter.getCometImpactSite();
+
+            if (end == null) {
+                source.sendError(Text.literal("§cNo active infection center found."));
+                return 0;
+            }
+
+            ServerWorld world = source.getWorld();
+            List<BlockPos> path = LabyrinthPathfinder.findPath(world, start, end);
+
+            if (path.isEmpty()) {
+                source.sendError(Text.literal("§cNo path found to the center."));
+                return 0;
+            }
+
+            PathHighlighter.setPath(world, path);
+            source.sendFeedback(() -> Text.literal("§aPath highlighted with " + path.size() + " steps."), true);
+
+            return 1;
+        } catch (Exception e) {
+            source.sendError(Text.literal("§cError: " + e.getMessage()));
+
             return 0;
         }
     }
