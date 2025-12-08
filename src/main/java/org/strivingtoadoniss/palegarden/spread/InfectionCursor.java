@@ -30,6 +30,8 @@ public class InfectionCursor extends SpreadCursor {
     @Getter
     private final CleansingCursor pairedCleansingCursor;
 
+    private final InfectionMobSpawner mobSpawner;
+
     private boolean shouldSkipWalls = false;
 
     public static final Set<Block> EXCLUDED_BLOCKS = Set.of(
@@ -47,6 +49,7 @@ public class InfectionCursor extends SpreadCursor {
     public InfectionCursor(ServerWorld world, BlockPos origin) {
         super(world, origin);
         this.pairedCleansingCursor = new CleansingCursor(world, origin);
+        this.mobSpawner = new InfectionMobSpawner(world);
         activate();
     }
 
@@ -60,6 +63,7 @@ public class InfectionCursor extends SpreadCursor {
         infectBlock(pos);
         placeLabyrinthWall(pos);
         trySpawnMushroom(pos);
+        mobSpawner.trySpawnMobs(pos);
     }
 
     @Override
