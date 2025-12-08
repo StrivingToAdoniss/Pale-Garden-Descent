@@ -30,6 +30,8 @@ public class InfectionCursor extends SpreadCursor {
     @Getter
     private final CleansingCursor pairedCleansingCursor;
 
+    private boolean shouldSkipWalls = false;
+
     public static final Set<Block> EXCLUDED_BLOCKS = Set.of(
         ModBlocks.PALE_MUSHROOM,
         ModBlocks.PALE_STONE,
@@ -46,6 +48,11 @@ public class InfectionCursor extends SpreadCursor {
         super(world, origin);
         this.pairedCleansingCursor = new CleansingCursor(world, origin);
         activate();
+    }
+
+    public InfectionCursor(ServerWorld world, BlockPos origin, boolean shouldSkipWalls) {
+        this(world, origin);
+        this.shouldSkipWalls = shouldSkipWalls;
     }
 
     @Override
@@ -185,7 +192,8 @@ public class InfectionCursor extends SpreadCursor {
     }
 
     private boolean shouldSkipLabyrinthWall(BlockPos pos) {
-        return world.getBlockState(pos.up()).isSolidBlock(world, pos.up())
+        return shouldSkipWalls
+            || world.getBlockState(pos.up()).isSolidBlock(world, pos.up())
             || InfectionStarter.isInImpactZone(pos);
     }
 

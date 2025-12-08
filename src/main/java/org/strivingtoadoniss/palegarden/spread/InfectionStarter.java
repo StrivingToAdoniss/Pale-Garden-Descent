@@ -24,12 +24,12 @@ public class InfectionStarter {
         if (surfacePos != null) {
             cometImpactSite = surfacePos;
 
-            BlockPos corePos = CometGorgeGenerator.generateGorge(serverWorld, surfacePos, serverWorld.getRandom());
+            BlockPos chamberCenter = CometGorgeGenerator.generateGorge(serverWorld, surfacePos, serverWorld.getRandom());
 
-            InfectionCursor coreCursor = new InfectionCursor(serverWorld, corePos.down());
+            InfectionCursor chamberCursor = new InfectionCursor(serverWorld, chamberCenter, true);
             InfectionCursor surfaceCursor = new InfectionCursor(serverWorld, surfacePos);
             LabyrinthGenerator.setWorld(serverWorld);
-            InfectionSystem.getInstance().addInfectionCursor(coreCursor);
+            InfectionSystem.getInstance().addInfectionCursor(chamberCursor);
             InfectionSystem.getInstance().addInfectionCursor(surfaceCursor);
         }
     }
