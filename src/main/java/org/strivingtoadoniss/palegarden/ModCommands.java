@@ -58,61 +58,97 @@ public class ModCommands {
 
     private static void registerEffectClearCommand(
         CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("effect_clear")
-            .requires(source -> source.hasPermissionLevel(2))
-            .then(argument("effect_name", word())
-                .suggests(EFFECT_SUGGESTIONS)
-                .executes(ModCommands::executeEffectClear)));
+        dispatcher.register(literal("palegarden")
+            .then(literal("effect_clear")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(argument("effect_name", word())
+                    .suggests(EFFECT_SUGGESTIONS)
+                    .executes(ModCommands::executeEffectClear)
+                )
+            )
+        );
     }
 
     private static void registerStartSpreadCommand(
         CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("start_spread")
-            .requires(source -> source.hasPermissionLevel(2))
-            .then(argument("radius", integer(5))
-                .executes(ModCommands::executeStartSpread)));
+        dispatcher.register(literal("palegarden")
+            .then(literal("start_spread")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(argument("radius", integer(5))
+                    .executes(ModCommands::executeStartSpread)
+                )
+            )
+        );
     }
 
     private static void registerSetSpeedCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("set_infection_speed")
-            .requires(source -> source.hasPermissionLevel(2))
-            .then(argument("speed", integer(1))
-                .executes(ModCommands::executeSetSpeed))
+        dispatcher.register(literal("palegarden")
+            .then(literal("set_infection_speed")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(argument("speed", integer(1))
+                    .executes(ModCommands::executeSetSpeed))
+            )
         );
     }
 
     private static void registerSetDelayCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("set_infection_delay")
-            .requires(source -> source.hasPermissionLevel(2))
-            .then(argument("delay", integer(0))
-                .executes(ModCommands::executeSetDelay))
+        dispatcher.register(literal("palegarden")
+            .then(literal("set_infection_delay")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(argument("delay", integer(0))
+                    .executes(ModCommands::executeSetDelay))
+            )
         );
     }
 
     private static void registerSetMaxTransformations(
         CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("set_max_transformations")
-            .requires(source -> source.hasPermissionLevel(2))
-            .then(argument("transforms", integer(1))
-                .executes(ModCommands::executeSetMaxTransformations))
+        dispatcher.register(literal("palegarden")
+            .then(literal("set_max_transformations")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(argument("transforms", integer(1))
+                    .executes(ModCommands::executeSetMaxTransformations))
+            )
         );
     }
 
     private static void registerSetMaxInfectionRadius(
         CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("set_max_infection_radius")
-            .requires(source -> source.hasPermissionLevel(2))
-            .then(argument("radius", integer(1))
-                .executes(ModCommands::executeSetMaxInfectionRadius))
+        dispatcher.register(literal("palegarden")
+            .then(literal("set_max_infection_radius")
+                .requires(source -> source.hasPermissionLevel(2))
+                .then(argument("radius", integer(1))
+                    .executes(ModCommands::executeSetMaxInfectionRadius))
+            )
         );
     }
 
     private static void registerStopAllInfections(
         CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("stop_all_infections")
-            .requires(source -> source.hasPermissionLevel(2))
-            .executes(ModCommands::executeStopAllInfections)
+        dispatcher.register(literal("palegarden")
+            .then(literal("stop_all_infections")
+                .requires(source -> source.hasPermissionLevel(2))
+                .executes(ModCommands::executeStopAllInfections)
+            )
+        );
+    }
 
+    private static void registerGenerateGorge(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(literal("palegarden")
+            .then(literal("generate_gorge")
+                .requires(source -> source.hasPermissionLevel(2))
+                .executes(ModCommands::executeGenerateGorge)
+            )
+        );
+    }
+
+    private static void registerPathToCenterCommand(
+        CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(literal("palegarden")
+            .then(literal("path_to_center")
+                .requires(source -> source.hasPermissionLevel(2))
+                .executes(ModCommands::executePathToCenter)
+            )
         );
     }
 
@@ -258,13 +294,6 @@ public class ModCommands {
         }
     }
 
-    private static void registerGenerateGorge(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("palegarden")
-            .then(literal("generate_gorge")
-                .requires(source -> source.hasPermissionLevel(2))
-                .executes(ModCommands::executeGenerateGorge)));
-    }
-
     private static int executeGenerateGorge(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
 
@@ -287,12 +316,6 @@ public class ModCommands {
             source.sendError(Text.literal("§cError: " + e.getMessage()));
             return 0;
         }
-    }
-
-    private static void registerPathToCenterCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("path_to_center")
-                .requires(source -> source.hasPermissionLevel(2))
-                .executes(ModCommands::executePathToCenter));
     }
 
     private static int executePathToCenter(CommandContext<ServerCommandSource> context) {
