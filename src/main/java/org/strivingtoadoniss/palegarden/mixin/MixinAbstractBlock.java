@@ -33,6 +33,8 @@ public class MixinAbstractBlock {
             if (isStump) {
                 cir.setReturnValue(0.0f);
             }
+        } else if (state.isOf(Blocks.PALE_OAK_LEAVES)) {
+            cir.setReturnValue(0.0f);
         }
     }
 

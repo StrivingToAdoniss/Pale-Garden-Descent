@@ -1,14 +1,17 @@
 package org.strivingtoadoniss.palegarden.spread;
 
+import lombok.Getter;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 import org.strivingtoadoniss.palegarden.worldgen.CometGorgeGenerator;
+import org.strivingtoadoniss.palegarden.worldgen.LabyrinthCanopyBuilder;
 import org.strivingtoadoniss.palegarden.worldgen.LabyrinthGenerator;
 
 public class InfectionStarter {
 
+    @Getter
     private static BlockPos cometImpactSite = null;
     private static final int IMPACT_EXCLUSION_RADIUS = 6;
 
@@ -24,7 +27,9 @@ public class InfectionStarter {
         if (surfacePos != null) {
             cometImpactSite = surfacePos;
 
-            BlockPos chamberCenter = CometGorgeGenerator.generateGorge(serverWorld, surfacePos, serverWorld.getRandom());
+            BlockPos chamberCenter = CometGorgeGenerator.generateGorge(serverWorld, surfacePos,
+                    serverWorld.getRandom());
+            LabyrinthCanopyBuilder.buildImpactCanopy(serverWorld, surfacePos, IMPACT_EXCLUSION_RADIUS);
 
             InfectionCursor chamberCursor = new InfectionCursor(serverWorld, chamberCenter, true);
             InfectionCursor surfaceCursor = new InfectionCursor(serverWorld, surfacePos);
@@ -63,6 +68,6 @@ public class InfectionStarter {
 
     private static boolean isSurfaceBlock(ServerWorld world, BlockPos pos) {
         return world.getBlockState(pos).isSolidBlock(world, pos) &&
-               !world.getBlockState(pos.up()).isSolidBlock(world, pos.up());
+            !world.getBlockState(pos.up()).isSolidBlock(world, pos.up());
     }
 }
