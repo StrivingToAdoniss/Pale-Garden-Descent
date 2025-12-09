@@ -24,8 +24,6 @@ public class PalegardenBlockLootTableProvider extends FabricBlockLootTableProvid
 
     @Override
     public void generate() {
-        addDrop(ModBlocks.PALE_STONE);
-        addDrop(ModBlocks.PALE_ROOTED_STONE);
         addPaleMushroomDrop();
     }
 
