@@ -1,9 +1,8 @@
 package org.strivingtoadoniss.palegarden.entities;
 
+import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
@@ -22,6 +21,9 @@ import net.minecraft.world.World;
 import org.strivingtoadoniss.palegarden.spread.InfectionSystem;
 
 public class CometBossEntity extends HostileEntity {
+
+    public final AnimationState idleAnimationState = new AnimationState();
+    private int idleAnimationTimeout = 0;
 
     private final ServerBossBar bossBar = new ServerBossBar(
         Text.translatable("entity.palegarden.comet_boss"),
@@ -44,9 +46,21 @@ public class CometBossEntity extends HostileEntity {
     }
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(2, new LookAroundGoal(this));
+    public void tick() {
+        super.tick();
+
+        if (this.getWorld().isClient()) {
+            this.setupAnimationStates();
+        }
+    }
+
+    private void setupAnimationStates() {
+        if (this.idleAnimationTimeout <= 0) {
+            this.idleAnimationTimeout = 63;
+            this.idleAnimationState.start(this.age);
+        } else {
+            this.idleAnimationTimeout--;
+        }
     }
 
     @Override

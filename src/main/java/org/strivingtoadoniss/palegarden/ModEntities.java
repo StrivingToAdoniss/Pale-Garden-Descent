@@ -29,7 +29,7 @@ public class ModEntities {
         Registries.ENTITY_TYPE,
         COMET_BOSS_KEY,
         EntityType.Builder.create(CometBossEntity::new, SpawnGroup.MONSTER)
-            .dimensions(2.0f, 2.0f)
+            .dimensions(2.0f, 4.0f)
             .maxTrackingRange(10)
             .build(COMET_BOSS_KEY)
     );
