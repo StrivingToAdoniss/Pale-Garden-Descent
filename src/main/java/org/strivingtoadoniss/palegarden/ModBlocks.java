@@ -95,7 +95,6 @@ public class ModBlocks {
             .mapColor(MapColor.CLEAR)
             .noCollision()
             .strength(-1.0f, 3600000.0f)
-            .air()
             .dropsNothing()
             .nonOpaque(),
         false
