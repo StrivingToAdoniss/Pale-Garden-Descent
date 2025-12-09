@@ -166,7 +166,12 @@ public class CometGorgeGenerator {
             lowestPoint = lowestPoint.down(1);
         }
 
-        return chamberCenter.down(8);
+        for (int i = 0; i < 4 && lowestPoint.getY() > BEDROCK_LEVEL - 1; i++) {
+            chamberCenter = chamberCenter.down(1);
+            lowestPoint = lowestPoint.down(1);
+        }
+
+        return chamberCenter;
     }
 
     private static void carveChamber(ServerWorld world, BlockPos center, Random random) {
