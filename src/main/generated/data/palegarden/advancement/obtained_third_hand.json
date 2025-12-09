@@ -10,11 +10,17 @@
     }
   },
   "display": {
+    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
     "description": {
       "translate": "advancement.palegarden.obtained_third_hand.description"
     },
     "frame": "challenge",
     "icon": {
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "palegarden:potion_of_third_hand"
+        }
+      },
       "count": 1,
       "id": "minecraft:potion"
     },

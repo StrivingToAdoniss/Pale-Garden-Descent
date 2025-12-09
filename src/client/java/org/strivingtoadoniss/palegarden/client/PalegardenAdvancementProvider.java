@@ -8,16 +8,22 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.criterion.EffectsChangedCriterion;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.strivingtoadoniss.palegarden.ModEffects;
+import org.strivingtoadoniss.palegarden.ModItems;
+import org.strivingtoadoniss.palegarden.ModPotions;
 import org.strivingtoadoniss.palegarden.Palegarden;
 
 public class PalegardenAdvancementProvider extends FabricAdvancementProvider {
+
+    public static final String BACKGROUNDS_ADVENTURE_PNG = "textures/gui/advancements/backgrounds/adventure.png";
 
     public PalegardenAdvancementProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> registryLookup) {
         super(output, registryLookup);
@@ -33,10 +39,11 @@ public class PalegardenAdvancementProvider extends FabricAdvancementProvider {
     private void buildGoldenMetabolismAdvancement(Consumer<AdvancementEntry> consumer) {
         Advancement.Builder.create()
             .display(
-                Items.POTION,
+                PotionContentsComponent.createStack(Items.POTION,
+                    Registries.POTION.getEntry(ModPotions.POTION_OF_GOLDEN_METABOLISM)),
                 Text.translatable("advancement.palegarden.obtained_golden_metabolism.title"),
                 Text.translatable("advancement.palegarden.obtained_golden_metabolism.description"),
-                null,
+                Identifier.ofVanilla(BACKGROUNDS_ADVENTURE_PNG),
                 AdvancementFrame.CHALLENGE,
                 true,
                 true,
@@ -51,10 +58,11 @@ public class PalegardenAdvancementProvider extends FabricAdvancementProvider {
     private static void buildGiantRibcageAdvancement(Consumer<AdvancementEntry> consumer) {
         Advancement.Builder.create()
             .display(
-                Items.POTION,
+                PotionContentsComponent.createStack(Items.POTION,
+                    Registries.POTION.getEntry(ModPotions.POTION_OF_GIANT_RIBCAGE)),
                 Text.translatable("advancement.palegarden.obtained_giant_ribcage.title"),
                 Text.translatable("advancement.palegarden.obtained_giant_ribcage.description"),
-                null,
+                Identifier.ofVanilla(BACKGROUNDS_ADVENTURE_PNG),
                 AdvancementFrame.CHALLENGE,
                 true,
                 true,
@@ -69,10 +77,11 @@ public class PalegardenAdvancementProvider extends FabricAdvancementProvider {
     private static void buildThirdHandAdvancement(Consumer<AdvancementEntry> consumer) {
         Advancement.Builder.create()
             .display(
-                Items.POTION,
+                PotionContentsComponent.createStack(Items.POTION,
+                    Registries.POTION.getEntry(ModPotions.POTION_OF_THIRD_HAND)),
                 Text.translatable("advancement.palegarden.obtained_third_hand.title"),
                 Text.translatable("advancement.palegarden.obtained_third_hand.description"),
-                null,
+                Identifier.ofVanilla(BACKGROUNDS_ADVENTURE_PNG),
                 AdvancementFrame.CHALLENGE,
                 true,
                 true,
